@@ -4,11 +4,10 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const { pool } = require("../dbconfig");
 const jwt = require("jsonwebtoken");
-const verify = require("../verifyToken");
+const verifyAdmin = require("../verifyToken");
 const verifyUser = require("../verify");
 const app = express();
 const fileupload = require("express-fileupload");
-const verifyToken = require("../verifyToken");
 app.use(fileupload());
 
 const port = 8000;
@@ -47,7 +46,7 @@ app.get("/", (req, res) => {
 });
 
 // get users
-app.get("/api/users", verifyToken, (req, res) => {
+app.get("/api/users", verifyAdmin, (req, res) => {
   pool.query(
     `SELECT id, name, email, status, created_at, last_login, role FROM users`,
     (err, result) => {
@@ -169,7 +168,7 @@ app.post("/api/auth/login", (req, res) => {
 });
 
 // block user
-app.post("/api/users/block", verify, (req, res) => {
+app.post("/api/users/block", verifyAdmin, (req, res) => {
   let { id, status } = req.body;
   if (!id || !(typeof status === "boolean")) {
     res.status(400).send("Error");
@@ -195,7 +194,7 @@ app.post("/api/users/block", verify, (req, res) => {
 });
 
 // set role
-app.post("/api/users/role", verify, (req, res) => {
+app.post("/api/users/role", verifyAdmin, (req, res) => {
   let { id, role } = req.body;
   if (!id || !role) {
     res.status(400).send("Error");
@@ -221,7 +220,7 @@ app.post("/api/users/role", verify, (req, res) => {
 });
 
 // delete user
-app.delete("/api/users/:id", verify, (req, res) => {
+app.delete("/api/users/:id", verifyAdmin, (req, res) => {
   const id = req.params.id;
   pool.query(
     `DELETE
@@ -243,7 +242,7 @@ app.delete("/api/users/:id", verify, (req, res) => {
 });
 
 // upload image
-app.post("/api/upload", verify, (req, res) => {
+app.post("/api/upload", verifyUser, (req, res) => {
   let img;
   let uploadPath;
 

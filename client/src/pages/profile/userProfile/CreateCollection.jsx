@@ -18,21 +18,59 @@ import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import CreateIcon from "@mui/icons-material/Create";
 import AddIcon from "@mui/icons-material/Add";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import CheckIcon from "@mui/icons-material/Check";
 import Check from "@mui/icons-material/Check";
 
 import AdditionalFieldTypography from "../components/AdditionalFieldTypography";
 
-import { getCategories } from "../../../fetch/apies";
+import { getCategories, postImage } from "../../../fetch/apies";
 
 function CreateCollection() {
+  const current_user = JSON.parse(localStorage.getItem("current_user"));
   const [categories, setCategories] = useState([]);
   useEffect(() => {
     getCategories().then((res) => {
       setCategories(res);
     });
   }, []);
+
+  // image
+  const [imageInputs, setImageInputs] = useState({
+    file: "",
+    preview: "",
+    error: "",
+  });
+
+  const handleImage = (e) => {
+    setImageInputs((prevState) => ({
+      ...prevState,
+      file: "",
+      preview: "",
+      error: "",
+    }));
+    let reader = new FileReader();
+    let file = e.target.files[0];
+    if (file) {
+      var extension = file.name.split(".").pop().toLowerCase();
+      var isSuccess = ["jpg", "jpeg", "png"].indexOf(extension) > -1;
+    }
+    if (isSuccess) {
+      reader.onloadend = () => {
+        setImageInputs((prevState) => ({
+          ...prevState,
+          file: file,
+          preview: reader.result,
+        }));
+      };
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+    } else {
+      setImageInputs((prevState) => ({
+        ...prevState,
+        error: "Wrong format",
+      }));
+    }
+  };
 
   // name
   const [nameInputs, setNameInputs] = useState({
@@ -157,12 +195,33 @@ function CreateCollection() {
 
   const createCollectionBtn = (e) => {
     e.preventDefault();
-
+    if (imageInputs.file === "") {
+      setImageInputs((prevState) => ({
+        ...prevState,
+        error: "Image required",
+      }));
+    }
     if (
       validationName.passes() &&
       validationDescription.passes() &&
       validationCategory.passes()
     ) {
+      const data = {
+        userId: current_user.id,
+        name: nameInputs.name,
+        description: descriptionInputs.description,
+        categoryId: categoryInputs.category,
+        // imageId,
+        // checkbox_fields,
+        // integer_fields,
+        // string_fields,
+      };
+      if (imageInputs.file) {
+        postImage(current_user.token, imageInputs.file).then((res) => {
+          console.log(res);
+        });
+      }
+      console.log(data, "jjj");
     } else {
       setNameInputs((prevState) => ({
         ...prevState,
@@ -183,33 +242,55 @@ function CreateCollection() {
     <Box component="form" autoComplete="off">
       <Grid container spacing={4}>
         <Grid item xs={6}>
-          <Typography variant="body2" mb={1} color="#919aa3">
-            Collection Image:
-          </Typography>
-          <label htmlFor="collection-image">
-            <Box
-              height="235px"
-              sx={{
-                borderRadius: "5px",
-                cursor: "pointer",
-                background: "#e8f4ff",
-                color: "#1976d2",
-              }}
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-            >
-              +
-            </Box>
-          </label>
-          <input
-            type="file"
-            id="collection-image"
-            name="collection-image"
-            accept="image/png, image/jpeg"
-            style={{ display: "none " }}
-          />
+          <FormControl fullWidth>
+            <Typography variant="body2" mb={1} color="#919aa3">
+              Collection Image:
+            </Typography>
 
+            <label htmlFor="collection-image">
+              <Box
+                height="235px"
+                sx={{
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  background: "#e8f4ff",
+                  color: "#1976d2",
+                }}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              >
+                {imageInputs.preview ? (
+                  <img
+                    src={imageInputs.preview}
+                    height={"100%"}
+                    width={"100%"}
+                    style={{
+                      objectFit: "cover",
+                      borderRadius: "5px",
+                      border: "solid #e8f4ff 2px",
+                    }}
+                  />
+                ) : (
+                  "+"
+                )}
+              </Box>
+            </label>
+            {imageInputs.error && (
+              <p style={{ color: "#e53935", fontSize: "11px" }}>
+                {imageInputs.error}
+              </p>
+            )}
+
+            <input
+              type="file"
+              id="collection-image"
+              name="collection-image"
+              accept="image/png, image/jpeg"
+              style={{ display: "none " }}
+              onChange={handleImage}
+            />
+          </FormControl>
           <FormControl fullWidth>
             <Typography variant="body2" mb={1} mt={2} color="#919aa3">
               Name:
@@ -267,7 +348,7 @@ function CreateCollection() {
             >
               {categories.length > 0 &&
                 categories.map((el) => (
-                  <MenuItem sx={{ color: "#919aa3" }} value={el.id}>
+                  <MenuItem sx={{ color: "#919aa3" }} value={el.id} key={el.id}>
                     {el.name}
                   </MenuItem>
                 ))}
