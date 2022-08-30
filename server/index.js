@@ -337,6 +337,7 @@ app.get("/api/categories", (req, res) => {
   });
 });
 
+// post string-fields
 app.post("/api/string-fields", verifyUser, (req, res) => {
   let { name } = req.body;
   if (!name) {
@@ -358,6 +359,7 @@ app.post("/api/string-fields", verifyUser, (req, res) => {
   }
 });
 
+// delete string-fields
 app.delete("/api/string-fields/:id", (req, res) => {
   const id = req.params.id;
   pool.query(
@@ -377,6 +379,34 @@ app.delete("/api/string-fields/:id", (req, res) => {
       }
     }
   );
+});
+
+// update string-field
+
+app.put("/api/string-fields/:id", (req, res) => {
+  const id = req.params.id;
+  let { name, collectionId } = req.body;
+  if (!name || !collectionId) {
+    res.status(400).send("Error");
+  } else {
+    pool.query(
+      `UPDATE string_fields
+         SET name = $1, collection_id = $2
+         WHERE id = $3
+         RETURNING id, name, collection_id;`,
+      [name, collectionId, id],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        if (result.rows.length > 0) {
+          res.status(201).send(result.rows[0]);
+        } else {
+          res.status(404).send("Not found");
+        }
+      }
+    );
+  }
 });
 
 // app.get("*", (req, res) => {

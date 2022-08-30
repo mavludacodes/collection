@@ -19,7 +19,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import CreateIcon from "@mui/icons-material/Create";
 import AddIcon from "@mui/icons-material/Add";
 import Check from "@mui/icons-material/Check";
-
+import DeleteIcon from "@mui/icons-material/Delete";
 import AdditionalFieldTypography from "../components/AdditionalFieldTypography";
 
 import {
@@ -252,7 +252,7 @@ function CreateCollection() {
       <Grid container spacing={4}>
         <Grid item xs={6}>
           <FormControl fullWidth>
-            <Typography variant="body2" mb={1} color="#919aa3">
+            <Typography variant="body2" mb={1} color="rgb(52, 71, 103)">
               Collection Image:
             </Typography>
 
@@ -301,7 +301,7 @@ function CreateCollection() {
             />
           </FormControl>
           <FormControl fullWidth>
-            <Typography variant="body2" mb={1} mt={2} color="#919aa3">
+            <Typography variant="body2" mb={1} mt={2} color="rgb(52, 71, 103)">
               Name:
             </Typography>
             <TextField
@@ -321,7 +321,7 @@ function CreateCollection() {
           </FormControl>
 
           <FormControl fullWidth>
-            <Typography variant="body2" mb={1} mt={2} color="#919aa3">
+            <Typography variant="body2" mb={1} mt={2} color="rgb(52, 71, 103)">
               Description:
             </Typography>
             <TextField
@@ -342,7 +342,7 @@ function CreateCollection() {
             </FormHelperText>
           </FormControl>
           <FormControl fullWidth>
-            <Typography variant="body2" mb={1} mt={2} color="#919aa3">
+            <Typography variant="body2" mb={1} mt={2} color="rgb(52, 71, 103)">
               Topic:
             </Typography>
             <Select
@@ -376,7 +376,7 @@ function CreateCollection() {
           />
           <Box my={2}>
             <Box display="flex">
-              <CreateIcon fontSize="small" sx={{ color: "#919aa3" }} />
+              <CreateIcon fontSize="small" sx={{ color: "rgb(52, 71, 103)" }} />
               <AdditionalFieldTypography
                 variant="subtitle2"
                 title="String fields"
@@ -391,22 +391,29 @@ function CreateCollection() {
                   mt={1}
                   key={el.id}
                 >
-                  <CreateIcon fontSize="12px" sx={{ color: "#919aa3" }} />
+                  <CreateIcon
+                    fontSize="12px"
+                    sx={{ color: "rgb(52, 71, 103)" }}
+                  />
                   <AdditionalFieldTypography
                     variant="subtitle2"
                     title={el.name}
+                  />
+                  <DeleteIcon
+                    fontSize="small"
+                    sx={{ color: "rgb(52, 71, 103)" }}
                   />
                 </Box>
               ))}
             {stringFields && stringFields.length < 3 && (
               <Box display="flex" alignItems="center" ml={5}>
                 {stringTyping ? (
-                  <CreateIcon fontSize="12px" />
+                  <CreateIcon fontSize="12px" sx={{ color: "#aeaeae" }} />
                 ) : (
                   <AddIcon fontSize="12px" sx={{ color: "#aeaeae" }} />
                 )}
                 <InputBase
-                  sx={{ ml: 1, fontSize: "14px" }}
+                  sx={{ ml: 1, fontSize: "14px", color: "#aeaeae" }}
                   inputRef={stringRef}
                   placeholder="New item"
                   onChange={handleStringInput}
@@ -427,7 +434,10 @@ function CreateCollection() {
           </Box>
           <Box my={2}>
             <Box display="flex">
-              <CalendarMonthIcon fontSize="small" sx={{ color: "#aeaeae" }} />
+              <CalendarMonthIcon
+                fontSize="small"
+                sx={{ color: "rgb(52, 71, 103)" }}
+              />
               <AdditionalFieldTypography
                 variant="subtitle2"
                 title="Date fields"
@@ -438,20 +448,27 @@ function CreateCollection() {
                 <Box display="flex" alignItems="center" ml={5} mt={1}>
                   <CalendarMonthIcon
                     fontSize="12px"
-                    sx={{ color: "#919aa3" }}
+                    sx={{ color: "rgb(52, 71, 103)" }}
                   />
                   <AdditionalFieldTypography variant="subtitle2" title={el} />
+                  <DeleteIcon
+                    fontSize="small"
+                    sx={{ color: "rgb(52, 71, 103)" }}
+                  />
                 </Box>
               ))}
             {dateFields && dateFields.length < 3 && (
               <Box display="flex" alignItems="center" ml={5} mt={1}>
                 {dateTyping ? (
-                  <CalendarMonthIcon fontSize="12px" />
+                  <CalendarMonthIcon
+                    fontSize="12px"
+                    sx={{ color: "#aeaeae" }}
+                  />
                 ) : (
                   <AddIcon fontSize="12px" sx={{ color: "#aeaeae" }} />
                 )}
                 <InputBase
-                  sx={{ ml: 1, fontSize: "14px" }}
+                  sx={{ ml: 1, fontSize: "14px", color: "#aeaeae" }}
                   inputRef={dateRef}
                   placeholder="New item"
                   onChange={handleDateInput}
@@ -471,7 +488,10 @@ function CreateCollection() {
           </Box>
           <Box my={2}>
             <Box display="flex">
-              <CheckBoxIcon fontSize="small" sx={{ color: "#aeaeae" }} />
+              <CheckBoxIcon
+                fontSize="small"
+                sx={{ color: "rgb(52, 71, 103)" }}
+              />
               <AdditionalFieldTypography
                 variant="subtitle2"
                 title="CheckBox fields"
@@ -480,19 +500,26 @@ function CreateCollection() {
             {booleanFields &&
               booleanFields.map((el) => (
                 <Box display="flex" alignItems="center" ml={5} mt={1}>
-                  <CheckBoxIcon fontSize="12px" sx={{ color: "#aeaeae" }} />
+                  <CheckBoxIcon
+                    fontSize="12px"
+                    sx={{ color: "rgb(52, 71, 103)" }}
+                  />
                   <AdditionalFieldTypography variant="subtitle2" title={el} />
+                  <DeleteIcon
+                    fontSize="small"
+                    sx={{ color: "rgb(52, 71, 103)" }}
+                  />
                 </Box>
               ))}
             {booleanFields && booleanFields.length < 3 && (
               <Box display="flex" alignItems="center" ml={5} mt={1}>
                 {boolTyping ? (
-                  <CheckBoxIcon fontSize="12px" />
+                  <CheckBoxIcon fontSize="12px" sx={{ color: "#aeaeae" }} />
                 ) : (
                   <AddIcon fontSize="12px" sx={{ color: "#aeaeae" }} />
                 )}
                 <InputBase
-                  sx={{ ml: 1, fontSize: "14px" }}
+                  sx={{ ml: 1, fontSize: "14px", color: "#aeaeae" }}
                   inputRef={boolRef}
                   placeholder="New item"
                   onChange={handleBooleanInput}
