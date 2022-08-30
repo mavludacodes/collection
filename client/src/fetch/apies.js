@@ -218,6 +218,27 @@ const updateCheckboxField = async (id, token) => {
   }
 };
 
+const createCollection = async (data, token) => {
+  const req = await fetch(
+    `${process.env.REACT_APP_BACKEND_API}/api/collections`,
+    {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset= UTF-8",
+        "auth-token": token,
+      },
+      body: JSON.stringify(data),
+    }
+  );
+  try {
+    const res = await req.json();
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
 export {
   getCategories,
   postImage,
@@ -230,4 +251,5 @@ export {
   updateStringField,
   updateIntegerField,
   updateCheckboxField,
+  createCollection,
 };

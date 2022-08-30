@@ -25,6 +25,7 @@ import AdditionalFieldTypography from "../components/AdditionalFieldTypography";
 import {
   getCategories,
   postImage,
+  createCollection,
   createStringField,
   createIntegerField,
   createCheckboxField,
@@ -198,9 +199,23 @@ function CreateCollection() {
   const handleDateField = (e) => {
     e.preventDefault();
     console.log(dateRef.current.value);
-    setDateFields((prevState) => [...prevState, dateRef.current.value]);
-    setDateTyping(false);
-    dateRef.current.value = "";
+    const data = { name: dateRef.current.value };
+    createIntegerField(data, current_user.token).then((res) => {
+      console.log(res);
+      setDateFields((prevState) => [...prevState, res]);
+      setDateTyping(false);
+      dateRef.current.value = "";
+    });
+  };
+
+  const deleteDateFieldBtn = (e, id) => {
+    e.preventDefault();
+    console.log(id);
+    deleteIntegerField(id, current_user.token).then((res) => {
+      console.log(res);
+      const newDateFields = dateFields.filter((el) => el.id !== id);
+      setDateFields((prevState) => [...newDateFields]);
+    });
   };
 
   const handleBooleanInput = (e) => {
@@ -214,9 +229,23 @@ function CreateCollection() {
   const handleBooleanField = (e) => {
     e.preventDefault();
     console.log(boolRef.current.value);
-    setBooleanFields((prevState) => [...prevState, boolRef.current.value]);
-    setBoolTyping(false);
-    boolRef.current.value = "";
+    const data = { name: boolRef.current.value };
+    createCheckboxField(data, current_user.token).then((res) => {
+      console.log(res);
+      setBooleanFields((prevState) => [...prevState, res]);
+      setBoolTyping(false);
+      boolRef.current.value = "";
+    });
+  };
+
+  const deleteBooleanFieldBtn = (e, id) => {
+    e.preventDefault();
+    console.log(id);
+    deleteCheckboxField(id, current_user.token).then((res) => {
+      console.log(res);
+      const newBooleanFields = booleanFields.filter((el) => el.id !== id);
+      setBooleanFields((prevState) => [...newBooleanFields]);
+    });
   };
 
   const createCollectionBtn = (e) => {
@@ -232,22 +261,27 @@ function CreateCollection() {
       validationDescription.passes() &&
       validationCategory.passes()
     ) {
-      const data = {
+      let data = {
         userId: current_user.id,
         name: nameInputs.name,
         description: descriptionInputs.description,
         categoryId: categoryInputs.category,
-        // imageId,
-        // checkbox_fields,
-        // integer_fields,
-        // string_fields,
+        checkbox_fields: booleanFields.map((el) => Number(el.id)),
+        integer_fields: dateFields.map((el) => Number(el.id)),
+        string_fields: stringFields.map((el) => Number(el.id)),
       };
+
       if (imageInputs.file) {
         postImage(current_user.token, imageInputs.file).then((res) => {
           console.log(res);
+          data = { ...data, imageId: res.id };
+
+          createCollection(data, current_user.token).then((res) => {
+            console.log(res);
+            // console.log(data, "jjj");
+          });
         });
       }
-      console.log(data, "jjj");
     } else {
       setNameInputs((prevState) => ({
         ...prevState,
@@ -463,15 +497,25 @@ function CreateCollection() {
             </Box>
             {dateFields &&
               dateFields.map((el) => (
-                <Box display="flex" alignItems="center" ml={5} mt={1}>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  ml={5}
+                  mt={1}
+                  key={el.id}
+                >
                   <CalendarMonthIcon
                     fontSize="12px"
                     sx={{ color: "rgb(52, 71, 103)" }}
                   />
-                  <AdditionalFieldTypography variant="subtitle2" title={el} />
+                  <AdditionalFieldTypography
+                    variant="subtitle2"
+                    title={el.name}
+                  />
                   <DeleteIcon
                     fontSize="small"
-                    sx={{ color: "rgb(52, 71, 103)" }}
+                    sx={{ color: "rgb(52, 71, 103)", cursor: "pointer" }}
+                    onClick={(e) => deleteDateFieldBtn(e, el.id)}
                   />
                 </Box>
               ))}
@@ -517,15 +561,25 @@ function CreateCollection() {
             </Box>
             {booleanFields &&
               booleanFields.map((el) => (
-                <Box display="flex" alignItems="center" ml={5} mt={1}>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  ml={5}
+                  mt={1}
+                  key={el.id}
+                >
                   <CheckBoxIcon
                     fontSize="12px"
                     sx={{ color: "rgb(52, 71, 103)" }}
                   />
-                  <AdditionalFieldTypography variant="subtitle2" title={el} />
+                  <AdditionalFieldTypography
+                    variant="subtitle2"
+                    title={el.name}
+                  />
                   <DeleteIcon
                     fontSize="small"
-                    sx={{ color: "rgb(52, 71, 103)" }}
+                    sx={{ color: "rgb(52, 71, 103)", cursor: "pointer" }}
+                    onClick={(e) => deleteBooleanFieldBtn(e, el.id)}
                   />
                 </Box>
               ))}

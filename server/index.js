@@ -303,7 +303,7 @@ app.post("/api/collections", verifyUser, (req, res) => {
     pool.query(
       `INSERT INTO collections (user_id, name, description, category_id ,image_id, checkbox_fields, integer_fields, string_fields) 
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING id, name, checkbox_fields`,
+       RETURNING id, name`,
       [
         userId,
         name,
@@ -319,8 +319,9 @@ app.post("/api/collections", verifyUser, (req, res) => {
           console.log(err);
           return res.status(500).send("Server Error");
         }
-        // console.log(r.rows[0]);
-        res.status(200).send("Ok");
+        if (r.rows.length > 0) {
+          res.status(200).send(r.rows[0]);
+        }
       }
     );
   }
