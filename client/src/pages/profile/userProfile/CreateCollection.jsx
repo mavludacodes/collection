@@ -357,7 +357,16 @@ function CreateCollection() {
   };
 
   return (
-    <Box component="form" autoComplete="off">
+    <Box
+      component="form"
+      autoComplete="off"
+      sx={{
+        padding: "30px",
+        background: "#fff",
+        borderRadius: "5px",
+        boxShadow: "0 1px 20px 0 rgb(69 90 100 / 8%)",
+      }}
+    >
       <Grid container spacing={4}>
         <Grid item xs={6}>
           <FormControl fullWidth>

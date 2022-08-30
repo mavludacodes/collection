@@ -45,7 +45,14 @@ export default function CollectionCard() {
   );
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card
+      sx={{
+        maxWidth: 345,
+        background: "#fff",
+        borderRadius: "5px",
+        boxShadow: "0 1px 20px 0 rgb(69 90 100 / 8%)",
+      }}
+    >
       <CardHeader
         action={
           <IconButton
@@ -63,11 +70,15 @@ export default function CollectionCard() {
       />
       {renderMenu}
       <CardMedia
+        sx={{
+          px: "15px",
+        }}
         component="img"
         height="194"
         image="https://static.wixstatic.com/media/bb1bd6_f221ad0f4d6f4103bf1d37b68b04492e~mv2.png/v1/fill/w_1000,h_571,al_c,usm_0.66_1.00_0.01/bb1bd6_f221ad0f4d6f4103bf1d37b68b04492e~mv2.png"
         alt="Paella dish"
       />
+
       <CardContent>
         <Typography variant="body2" color="text.secondary">
           This impressive paella is a perfect party dish and a fun meal to cook
@@ -76,8 +87,12 @@ export default function CollectionCard() {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <Button size="small">See More</Button>
-        <Button size="small">Items</Button>
+        <Button size="small" sx={{ textTransform: "none", mr: "15px" }}>
+          See More
+        </Button>
+        <Button size="small" sx={{ textTransform: "none" }}>
+          Add Items
+        </Button>
       </CardActions>
     </Card>
   );
