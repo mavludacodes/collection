@@ -352,15 +352,62 @@ app.post("/api/string-fields", verifyUser, (req, res) => {
         if (err) {
           console.log(err);
         }
-        // console.log(r.rows);
-        res.status(200).send(r.rows[0]);
+        if (r.rows.length > 0) {
+          res.status(200).send(r.rows[0]);
+        }
+      }
+    );
+  }
+});
+
+// post integer-fields
+app.post("/api/integer-fields", verifyUser, (req, res) => {
+  let { name } = req.body;
+  if (!name) {
+    res.status(400).send("Error");
+  } else {
+    pool.query(
+      `INSERT INTO integer_fields (name) 
+       VALUES ($1)
+       RETURNING id, name`,
+      [name],
+      (err, r) => {
+        if (err) {
+          console.log(err);
+        }
+        if (r.rows.length > 0) {
+          res.status(200).send(r.rows[0]);
+        }
+      }
+    );
+  }
+});
+
+// post checkbox-fields
+app.post("/api/checkbox-fields", verifyUser, (req, res) => {
+  let { name } = req.body;
+  if (!name) {
+    res.status(400).send("Error");
+  } else {
+    pool.query(
+      `INSERT INTO checkbox_fields (name) 
+       VALUES ($1)
+       RETURNING id, name`,
+      [name],
+      (err, r) => {
+        if (err) {
+          console.log(err);
+        }
+        if (r.rows.length > 0) {
+          res.status(200).send(r.rows[0]);
+        }
       }
     );
   }
 });
 
 // delete string-fields
-app.delete("/api/string-fields/:id", (req, res) => {
+app.delete("/api/string-fields/:id", verifyUser, (req, res) => {
   const id = req.params.id;
   pool.query(
     `DELETE
@@ -381,9 +428,52 @@ app.delete("/api/string-fields/:id", (req, res) => {
   );
 });
 
-// update string-field
+// delete integer-fields
+app.delete("/api/integer-fields/:id", verifyUser, (req, res) => {
+  const id = req.params.id;
+  pool.query(
+    `DELETE
+     FROM integer_fields
+     WHERE id = $1
+     RETURNING id, name;
+    `,
+    [id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      if (result.rows.length > 0) {
+        console.log(result.rows);
+        res.status(202).send("Ok");
+      }
+    }
+  );
+});
 
-app.put("/api/string-fields/:id", (req, res) => {
+// delete checkbox-fields
+app.delete("/api/checkbox-fields/:id", verifyUser, (req, res) => {
+  const id = req.params.id;
+  pool.query(
+    `DELETE
+     FROM checkbox_fields
+     WHERE id = $1
+     RETURNING id, name;
+    `,
+    [id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      if (result.rows.length > 0) {
+        console.log(result.rows);
+        res.status(202).send("Ok");
+      }
+    }
+  );
+});
+
+// update string-field
+app.put("/api/string-fields/:id", verifyUser, (req, res) => {
   const id = req.params.id;
   let { name, collectionId } = req.body;
   if (!name || !collectionId) {
@@ -391,6 +481,60 @@ app.put("/api/string-fields/:id", (req, res) => {
   } else {
     pool.query(
       `UPDATE string_fields
+         SET name = $1, collection_id = $2
+         WHERE id = $3
+         RETURNING id, name, collection_id;`,
+      [name, collectionId, id],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        if (result.rows.length > 0) {
+          res.status(201).send(result.rows[0]);
+        } else {
+          res.status(404).send("Not found");
+        }
+      }
+    );
+  }
+});
+
+// update string-field
+app.put("/api/integer-fields/:id", verifyUser, (req, res) => {
+  const id = req.params.id;
+  let { name, collectionId } = req.body;
+  if (!name || !collectionId) {
+    res.status(400).send("Error");
+  } else {
+    pool.query(
+      `UPDATE integer_fields
+         SET name = $1, collection_id = $2
+         WHERE id = $3
+         RETURNING id, name, collection_id;`,
+      [name, collectionId, id],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        if (result.rows.length > 0) {
+          res.status(201).send(result.rows[0]);
+        } else {
+          res.status(404).send("Not found");
+        }
+      }
+    );
+  }
+});
+
+// update checkbox-field
+app.put("/api/checkbox-fields/:id", verifyUser, (req, res) => {
+  const id = req.params.id;
+  let { name, collectionId } = req.body;
+  if (!name || !collectionId) {
+    res.status(400).send("Error");
+  } else {
+    pool.query(
+      `UPDATE checkbox_fields
          SET name = $1, collection_id = $2
          WHERE id = $3
          RETURNING id, name, collection_id;`,

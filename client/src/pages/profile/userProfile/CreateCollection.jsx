@@ -26,7 +26,14 @@ import {
   getCategories,
   postImage,
   createStringField,
+  createIntegerField,
+  createCheckboxField,
   deleteStringField,
+  deleteIntegerField,
+  deleteCheckboxField,
+  updateStringField,
+  updateIntegerField,
+  updateCheckboxField,
 } from "../../../fetch/apies";
 
 function CreateCollection() {
@@ -167,6 +174,16 @@ function CreateCollection() {
       setStringFields((prevState) => [...prevState, res]);
       setStringTyping(false);
       stringRef.current.value = "";
+    });
+  };
+
+  const deleteStringFieldBtn = (e, id) => {
+    e.preventDefault();
+    console.log(id);
+    deleteStringField(id, current_user.token).then((res) => {
+      console.log(res);
+      const newStringFields = stringFields.filter((el) => el.id !== id);
+      setStringFields((prevState) => [...newStringFields]);
     });
   };
 
@@ -401,7 +418,8 @@ function CreateCollection() {
                   />
                   <DeleteIcon
                     fontSize="small"
-                    sx={{ color: "rgb(52, 71, 103)" }}
+                    sx={{ color: "rgb(52, 71, 103)", cursor: "pointer" }}
+                    onClick={(e) => deleteStringFieldBtn(e, el.id)}
                   />
                 </Box>
               ))}
