@@ -11,7 +11,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import Button from "@mui/material/Button";
 
-export default function CollectionCard() {
+export default function CollectionCard({ collection }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
   const handleProfileMenuOpen = (event) => {
@@ -63,9 +63,7 @@ export default function CollectionCard() {
             <MoreVertIcon />
           </IconButton>
         }
-        title={
-          <Typography variant="subtitle1">Shrimp and Chorizo Paella</Typography>
-        }
+        title={<Typography variant="subtitle1">{collection.name}</Typography>}
         subheader="September 14, 2016"
       />
       {renderMenu}
@@ -81,9 +79,7 @@ export default function CollectionCard() {
 
       <CardContent>
         <Typography variant="body2" color="text.secondary">
-          This impressive paella is a perfect party dish and a fun meal to cook
-          together with your guests. Add 1 cup of frozen peas along with the
-          mussels, if you like.
+          {collection.description}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>

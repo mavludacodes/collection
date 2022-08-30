@@ -277,6 +277,7 @@ app.get("/images/:id/:url", (req, res) => {
   res.sendFile(path.join(__dirname, `./uploads/${url}`));
 });
 
+// post collection
 app.post("/api/collections", verifyUser, (req, res) => {
   const {
     userId,
@@ -325,6 +326,22 @@ app.post("/api/collections", verifyUser, (req, res) => {
       }
     );
   }
+});
+
+// get collection by userId
+app.get("/api/collections", (req, res) => {
+  let userId = req.query.userId;
+  pool.query(
+    `SELECT * FROM collections WHERE user_id = $1`,
+    [userId],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log(result.rows);
+      res.send(result.rows);
+    }
+  );
 });
 
 // get categories
