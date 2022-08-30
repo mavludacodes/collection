@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import Validator from "validatorjs";
 import {
   Box,
@@ -20,6 +22,8 @@ import CreateIcon from "@mui/icons-material/Create";
 import AddIcon from "@mui/icons-material/Add";
 import Check from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CircularProgress from "@mui/material/CircularProgress";
+
 import AdditionalFieldTypography from "../components/AdditionalFieldTypography";
 
 import {
@@ -38,6 +42,7 @@ import {
 } from "../../../fetch/apies";
 
 function CreateCollection() {
+  let navigate = useNavigate();
   const current_user = JSON.parse(localStorage.getItem("current_user"));
   const [categories, setCategories] = useState([]);
   useEffect(() => {
@@ -248,6 +253,8 @@ function CreateCollection() {
     });
   };
 
+  const [disabled, setDisabled] = useState(false);
+
   const createCollectionBtn = (e) => {
     e.preventDefault();
     if (imageInputs.file === "") {
@@ -272,13 +279,64 @@ function CreateCollection() {
       };
 
       if (imageInputs.file) {
+        setDisabled(true);
         postImage(current_user.token, imageInputs.file).then((res) => {
           console.log(res);
           data = { ...data, imageId: res.id };
 
           createCollection(data, current_user.token).then((res) => {
-            console.log(res);
-            // console.log(data, "jjj");
+            if (data.string_fields.length > 0) {
+              Promise.all(
+                stringFields.map(async (item) => {
+                  const data = {
+                    name: item.name,
+                    collectionId: res.id,
+                  };
+
+                  return updateStringField(
+                    current_user.token,
+                    item.id,
+                    data
+                  ).then((res) => res.status);
+                })
+              );
+            }
+            if (data.integer_fields.length > 0) {
+              Promise.all(
+                dateFields.map(async (item) => {
+                  const data = {
+                    name: item.name,
+                    collectionId: res.id,
+                  };
+
+                  return updateIntegerField(
+                    current_user.token,
+                    item.id,
+                    data
+                  ).then((res) => res.status);
+                })
+              );
+            }
+            if (data.checkbox_fields.length > 0) {
+              Promise.all(
+                booleanFields.map(async (item) => {
+                  const data = {
+                    name: item.name,
+                    collectionId: res.id,
+                  };
+
+                  return updateCheckboxField(
+                    current_user.token,
+                    item.id,
+                    data
+                  ).then((res) => res.status);
+                })
+              );
+            }
+            setTimeout(() => {
+              navigate("/profile/my-collections");
+              setDisabled(false);
+            }, 2000);
           });
         });
       }
@@ -612,6 +670,7 @@ function CreateCollection() {
         </Grid>
         <Grid item xs={12} display="flex" justifyContent="flex-end">
           <Button
+            disabled={disabled}
             variant="contained"
             sx={{
               background: "rgb(52, 71, 103)",
@@ -624,7 +683,11 @@ function CreateCollection() {
             }}
             onClick={(e) => createCollectionBtn(e)}
           >
-            Create
+            {disabled ? (
+              <CircularProgress size={18} color="inherit" />
+            ) : (
+              "Create"
+            )}
           </Button>
         </Grid>
       </Grid>

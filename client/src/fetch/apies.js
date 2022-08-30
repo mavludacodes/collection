@@ -158,7 +158,7 @@ const deleteCheckboxField = async (id, token) => {
   }
 };
 
-const updateStringField = async (id, token) => {
+const updateStringField = async (token, id, data) => {
   const req = await fetch(
     `${process.env.REACT_APP_BACKEND_API}/api/string-fields/${id}`,
     {
@@ -168,6 +168,7 @@ const updateStringField = async (id, token) => {
         "Content-Type": "application/json; charset= UTF-8",
         "auth-token": token,
       },
+      body: JSON.stringify(data),
     }
   );
   try {
@@ -178,7 +179,7 @@ const updateStringField = async (id, token) => {
   }
 };
 
-const updateIntegerField = async (id, token) => {
+const updateIntegerField = async (token, id, data) => {
   const req = await fetch(
     `${process.env.REACT_APP_BACKEND_API}/api/integer-fields/${id}`,
     {
@@ -188,6 +189,7 @@ const updateIntegerField = async (id, token) => {
         "Content-Type": "application/json; charset= UTF-8",
         "auth-token": token,
       },
+      body: JSON.stringify(data),
     }
   );
   try {
@@ -198,7 +200,7 @@ const updateIntegerField = async (id, token) => {
   }
 };
 
-const updateCheckboxField = async (id, token) => {
+const updateCheckboxField = async (token, id, data) => {
   const req = await fetch(
     `${process.env.REACT_APP_BACKEND_API}/api/checkbox-fields/${id}`,
     {
@@ -208,6 +210,7 @@ const updateCheckboxField = async (id, token) => {
         "Content-Type": "application/json; charset= UTF-8",
         "auth-token": token,
       },
+      body: JSON.stringify(data),
     }
   );
   try {
