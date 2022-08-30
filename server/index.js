@@ -337,6 +337,48 @@ app.get("/api/categories", (req, res) => {
   });
 });
 
+app.post("/api/string-fields", verifyUser, (req, res) => {
+  let { name } = req.body;
+  if (!name) {
+    res.status(400).send("Error");
+  } else {
+    pool.query(
+      `INSERT INTO string_fields (name) 
+       VALUES ($1)
+       RETURNING id, name`,
+      [name],
+      (err, r) => {
+        if (err) {
+          console.log(err);
+        }
+        // console.log(r.rows);
+        res.status(200).send(r.rows[0]);
+      }
+    );
+  }
+});
+
+app.delete("/api/string-fields/:id", (req, res) => {
+  const id = req.params.id;
+  pool.query(
+    `DELETE
+     FROM string_fields
+     WHERE id = $1
+     RETURNING id, name;
+    `,
+    [id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      if (result.rows.length > 0) {
+        console.log(result.rows);
+        res.status(202).send("Ok");
+      }
+    }
+  );
+});
+
 // app.get("*", (req, res) => {
 //   res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
 // });

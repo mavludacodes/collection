@@ -35,4 +35,43 @@ const postImage = async (token, file) => {
   }
 };
 
-export { getCategories, postImage };
+const createStringField = async (data, token) => {
+  const req = await fetch(
+    `${process.env.REACT_APP_BACKEND_API}/api/string-fields`,
+    {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset= UTF-8",
+        "auth-token": token,
+      },
+      body: JSON.stringify(data),
+    }
+  );
+  try {
+    const res = await req.json();
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+const deleteStringField = async (id) => {
+  const req = await fetch(
+    `${process.env.REACT_APP_BACKEND_API}/api/string-fields/${id}`,
+    {
+      method: "DELETE",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset= UTF-8",
+      },
+    }
+  );
+  try {
+    const res = await req;
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+export { getCategories, postImage, createStringField, deleteStringField };

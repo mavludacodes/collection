@@ -22,7 +22,12 @@ import Check from "@mui/icons-material/Check";
 
 import AdditionalFieldTypography from "../components/AdditionalFieldTypography";
 
-import { getCategories, postImage } from "../../../fetch/apies";
+import {
+  getCategories,
+  postImage,
+  createStringField,
+  deleteStringField,
+} from "../../../fetch/apies";
 
 function CreateCollection() {
   const current_user = JSON.parse(localStorage.getItem("current_user"));
@@ -156,9 +161,13 @@ function CreateCollection() {
   const handleStringField = (e) => {
     e.preventDefault();
     console.log(stringRef.current.value);
-    setStringFields((prevState) => [...prevState, stringRef.current.value]);
-    setStringTyping(false);
-    stringRef.current.value = "";
+    const data = { name: stringRef.current.value };
+    createStringField(data, current_user.token).then((res) => {
+      console.log(res);
+      setStringFields((prevState) => [...prevState, res]);
+      setStringTyping(false);
+      stringRef.current.value = "";
+    });
   };
 
   const handleDateInput = (e) => {
@@ -375,9 +384,18 @@ function CreateCollection() {
             </Box>
             {stringFields &&
               stringFields.map((el) => (
-                <Box display="flex" alignItems="center" ml={5} mt={1}>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  ml={5}
+                  mt={1}
+                  key={el.id}
+                >
                   <CreateIcon fontSize="12px" sx={{ color: "#919aa3" }} />
-                  <AdditionalFieldTypography variant="subtitle2" title={el} />
+                  <AdditionalFieldTypography
+                    variant="subtitle2"
+                    title={el.name}
+                  />
                 </Box>
               ))}
             {stringFields && stringFields.length < 3 && (
