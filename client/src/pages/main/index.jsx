@@ -20,10 +20,11 @@ function Main() {
             textDecoration: "none",
             color: "rgb(52, 71, 103)",
             letterSpacing: "-0.125px",
-            textAlign: "center",
+            // textAlign: "center",
+            ml: "15%",
           }}
         >
-          The latest works of our Authors
+          The Latest Works Of Our Authors
         </Typography>
       </Box>
       <ListItems />
@@ -41,7 +42,8 @@ function Main() {
             textDecoration: "none",
             color: "rgb(52, 71, 103)",
             letterSpacing: "-0.125px",
-            textAlign: "center",
+            textAlign: "right",
+            mr: "18%",
           }}
         >
           Top Collections

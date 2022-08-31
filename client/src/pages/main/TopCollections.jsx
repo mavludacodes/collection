@@ -59,10 +59,13 @@ export default function TopCollections() {
             maxWidth: 260,
             mr: "20px",
             mb: "20px",
-            background: "#F6F9FC",
-            border: "none",
-            boxShadow: "none",
-            borderRadius: "0",
+            // background: "#F6F9FC",
+            // border: "none",
+            // boxShadow: "none",
+            // borderRadius: "0",
+            background: "#fff",
+            borderRadius: "5px",
+            boxShadow: "0 1px 20px 0 rgb(69 90 100 / 8%)",
           }}
         >
           <CardHeader

@@ -332,13 +332,16 @@ app.post("/api/collections", verifyUser, (req, res) => {
 app.get("/api/collections", (req, res) => {
   let userId = req.query.userId;
   pool.query(
-    `SELECT * FROM collections WHERE user_id = $1`,
+    `SELECT collections.id, collections.name, collections.description, collections.created_at, collections.category_id, collections.checkbox_fields, collections.string_fields, collections.integer_fields, collections.user_id, 
+     collections.image_id, uploads.image_url
+    FROM collections JOIN uploads ON collections.image_id = uploads.id WHERE collections.user_id =$1`,
     [userId],
     (err, result) => {
       if (err) {
         console.log(err);
       }
       console.log(result.rows);
+
       res.send(result.rows);
     }
   );

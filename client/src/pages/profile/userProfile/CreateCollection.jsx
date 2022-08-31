@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Validator from "validatorjs";
@@ -25,6 +25,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import AdditionalFieldTypography from "../components/AdditionalFieldTypography";
+import { LabelContext } from "../index";
 
 import {
   getCategories,
@@ -43,9 +44,15 @@ import {
 
 function CreateCollection() {
   let navigate = useNavigate();
+  const [state, setState] = useContext(LabelContext);
   const current_user = JSON.parse(localStorage.getItem("current_user"));
   const [categories, setCategories] = useState([]);
   useEffect(() => {
+    setState((state) => ({
+      ...state,
+      label: "Create Collection",
+      sublabel: "Add your collection and necessary information from here",
+    }));
     getCategories().then((res) => {
       setCategories(res);
     });

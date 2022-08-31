@@ -12,7 +12,7 @@ import Login from "./auth/Login";
 import Register from "./auth/Register";
 
 // profile
-import Profile from "./pages/profile/index";
+import { Profile } from "./pages/profile/index";
 import Users from "./pages/profile/adminProfile/Users";
 import Collections from "./pages/profile/adminProfile/Collections";
 import MyCollections from "./pages/profile/userProfile/MyCollections";

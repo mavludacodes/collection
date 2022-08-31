@@ -64,16 +64,13 @@ export default function CollectionCard({ collection }) {
           </IconButton>
         }
         title={<Typography variant="subtitle1">{collection.name}</Typography>}
-        subheader="September 14, 2016"
+        subheader={collection.created_at}
       />
       {renderMenu}
       <CardMedia
-        sx={{
-          px: "15px",
-        }}
         component="img"
         height="194"
-        image="https://static.wixstatic.com/media/bb1bd6_f221ad0f4d6f4103bf1d37b68b04492e~mv2.png/v1/fill/w_1000,h_571,al_c,usm_0.66_1.00_0.01/bb1bd6_f221ad0f4d6f4103bf1d37b68b04492e~mv2.png"
+        image={`${process.env.REACT_APP_BACKEND_API}/images/${collection.image_id}/${collection.image_url}`}
         alt="Paella dish"
       />
 

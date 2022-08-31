@@ -1,7 +1,10 @@
 import { Box, Typography } from "@mui/material";
-import React from "react";
+import React, { useContext } from "react";
+import { LabelContext } from "../index";
 
 function ProfileLabel() {
+  const [state] = useContext(LabelContext);
+
   return (
     <Box
       sx={{
@@ -16,17 +19,17 @@ function ProfileLabel() {
           textTransform: "capitalize",
         }}
       >
-        Create Collection
+        {state.label}
       </Typography>
       <Typography
         sx={{
           fontSize: "13px",
           color: "#919aa3",
           marginTop: "10px",
-          textTransform: "capitalize",
+          textTransform: "none",
         }}
       >
-        lorem ipsum dolor sit amet, consectetur adipisicing
+        {state.sublabel}
       </Typography>
     </Box>
   );

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -13,6 +14,7 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import LanguageIcon from "@mui/icons-material/Language";
 import LoginIcon from "@mui/icons-material/Login";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { Button } from "@mui/material";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -55,6 +57,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Header() {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -95,8 +98,8 @@ export default function Header() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleMenuClose}>English</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Russian</MenuItem>
     </Menu>
   );
 
@@ -117,7 +120,7 @@ export default function Header() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
+      <MenuItem onClick={() => navigate("/auth/login")}>
         <IconButton
           size="large"
           aria-label="account of current user"
@@ -162,10 +165,15 @@ export default function Header() {
           </Search>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <Typography mr={2}>Login</Typography>
-            <Typography
-              sx={{ cursor: "pointer" }}
-              onMouseOver={handleProfileMenuOpen}
+            <Button
+              sx={{ color: "#fff" }}
+              onClick={() => navigate("/auth/login")}
+            >
+              Login
+            </Button>
+            <Button
+              sx={{ color: "#fff" }}
+              onClick={handleProfileMenuOpen}
               aria-label="account of current user"
               aria-controls={menuId}
               aria-haspopup="true"
@@ -175,7 +183,7 @@ export default function Header() {
                 fontSize="10px"
                 sx={{ paddingTop: "2px" }}
               />
-            </Typography>
+            </Button>
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
