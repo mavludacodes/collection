@@ -221,6 +221,63 @@ const updateCheckboxField = async (token, id, data) => {
   }
 };
 
+const getStringFields = async (token, collectionId) => {
+  const req = await fetch(
+    `${process.env.REACT_APP_BACKEND_API}/api/string-fields?collectionId=${collectionId}`,
+    {
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset= UTF-8",
+        "auth-token": token,
+      },
+    }
+  );
+  try {
+    const res = await req.json();
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+const getIntegerFields = async (token, collectionId) => {
+  const req = await fetch(
+    `${process.env.REACT_APP_BACKEND_API}/api/integer-fields?collectionId=${collectionId}`,
+    {
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset= UTF-8",
+        "auth-token": token,
+      },
+    }
+  );
+  try {
+    const res = await req.json();
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+const getCheckboxFields = async (token, collectionId) => {
+  const req = await fetch(
+    `${process.env.REACT_APP_BACKEND_API}/api/checkbox-fields?collectionId=${collectionId}`,
+    {
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset= UTF-8",
+        "auth-token": token,
+      },
+    }
+  );
+  try {
+    const res = await req.json();
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
 const createCollection = async (data, token) => {
   const req = await fetch(
     `${process.env.REACT_APP_BACKEND_API}/api/collections`,
@@ -292,6 +349,9 @@ export {
   updateStringField,
   updateIntegerField,
   updateCheckboxField,
+  getStringFields,
+  getIntegerFields,
+  getCheckboxFields,
   createCollection,
   getCollections,
   getItems,

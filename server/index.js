@@ -520,7 +520,7 @@ app.put("/api/string-fields/:id", verifyUser, (req, res) => {
   }
 });
 
-// update string-field
+// update integer-field
 app.put("/api/integer-fields/:id", verifyUser, (req, res) => {
   const id = req.params.id;
   let { name, collectionId } = req.body;
@@ -574,9 +574,53 @@ app.put("/api/checkbox-fields/:id", verifyUser, (req, res) => {
   }
 });
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
-// });
+// get string-fields by collection_id
+app.get("/api/string-fields", verifyUser, (req, res) => {
+  let collectionId = req.query.collectionId;
+  pool.query(
+    `SELECT * FROM string_fields WHERE collection_id = $1`,
+    [collectionId],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      // console.log(result.rows);
+      res.send(result.rows);
+    }
+  );
+});
+
+// get integer-fields by collection_id
+app.get("/api/integer-fields", verifyUser, (req, res) => {
+  let collectionId = req.query.collectionId;
+  pool.query(
+    `SELECT * FROM integer_fields WHERE collection_id = $1`,
+    [collectionId],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      // console.log(result.rows);
+      res.send(result.rows);
+    }
+  );
+});
+
+// get checkbox-fields by collection_id
+app.get("/api/checkbox-fields", verifyUser, (req, res) => {
+  let collectionId = req.query.collectionId;
+  pool.query(
+    `SELECT * FROM checkbox_fields WHERE collection_id = $1`,
+    [collectionId],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      // console.log(result.rows);
+      res.send(result.rows);
+    }
+  );
+});
 
 // get items by collectionId
 app.get("/api/items", (req, res) => {
@@ -593,6 +637,10 @@ app.get("/api/items", (req, res) => {
     }
   );
 });
+
+// app.get("*", (req, res) => {
+//   res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
+// });
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

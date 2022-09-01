@@ -1,22 +1,32 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import Validator from "validatorjs";
 import DataTable from "react-data-table-component";
 import { LabelContext } from "../index";
 import {
   Box,
-  IconButton,
   Tooltip,
   Toolbar,
   Button,
   Typography,
-  Radio,
-  RadioGroup,
+  Modal,
   FormControl,
-  FormControlLabel,
-  FormLabel,
+  FormHelperText,
+  TextField,
 } from "@mui/material";
 
-import { getItems } from "../../../fetch/apies";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+
+import {
+  getItems,
+  getStringFields,
+  getCheckboxFields,
+  getIntegerFields,
+} from "../../../fetch/apies";
 
 const columns = [
   {
@@ -60,6 +70,12 @@ function TableItems(props) {
   const [state, setState] = useContext(LabelContext);
 
   const [data, setData] = useState([]);
+
+  const [extraInputs, setExtraInputs] = useState({
+    stringInputs: "",
+    integerInputs: "",
+    checkboxInputs: "",
+  });
   useEffect(() => {
     setState((state) => ({
       ...state,
@@ -69,7 +85,98 @@ function TableItems(props) {
     getItems(token, id).then((res) => {
       setData(res);
     });
+
+    getStringFields(token, id).then((res) => {
+      setExtraInputs((prevState) => ({ ...prevState, stringInputs: res }));
+    });
+
+    getIntegerFields(token, id).then((res) => {
+      setExtraInputs((prevState) => ({ ...prevState, integerInputs: res }));
+    });
+    getCheckboxFields(token, id).then((res) => {
+      setExtraInputs((prevState) => ({ ...prevState, checkboxInputs: res }));
+    });
   }, []);
+
+  const [open, setOpen] = React.useState(false);
+  const [scroll, setScroll] = React.useState("paper");
+
+  const handleClickOpen = (scrollType) => () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const descriptionElementRef = React.useRef(null);
+  useEffect(() => {
+    if (open) {
+      const { current: descriptionElement } = descriptionElementRef;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [open]);
+
+  // name
+  const [nameInputs, setNameInputs] = useState({
+    email: "",
+    rule: "required",
+    startValidate: false,
+  });
+
+  const validationName = new Validator(
+    { name: nameInputs.name },
+    { name: nameInputs.rule }
+  );
+
+  const handleName = (e) => {
+    setNameInputs((prevState) => ({
+      ...prevState,
+      name: e.target.value,
+      startValidate: true,
+    }));
+  };
+
+  // image
+  const [imageInputs, setImageInputs] = useState({
+    file: "",
+    preview: "",
+    error: "",
+  });
+
+  const handleImage = (e) => {
+    setImageInputs((prevState) => ({
+      ...prevState,
+      file: "",
+      preview: "",
+      error: "",
+    }));
+    let reader = new FileReader();
+    let file = e.target.files[0];
+    if (file) {
+      var extension = file.name.split(".").pop().toLowerCase();
+      var isSuccess = ["jpg", "jpeg", "png"].indexOf(extension) > -1;
+    }
+    if (isSuccess) {
+      reader.onloadend = () => {
+        setImageInputs((prevState) => ({
+          ...prevState,
+          file: file,
+          preview: reader.result,
+        }));
+      };
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+    } else {
+      setImageInputs((prevState) => ({
+        ...prevState,
+        error: "Wrong format",
+      }));
+    }
+  };
 
   return (
     <Box
@@ -90,6 +197,7 @@ function TableItems(props) {
         <Tooltip title="Add new item">
           <Button
             variant="contained"
+            onClick={handleClickOpen("paper")}
             sx={{
               background: "rgb(52, 71, 103)",
               textTransform: "none",
@@ -104,13 +212,149 @@ function TableItems(props) {
           </Button>
         </Tooltip>
       </Toolbar>
-      <DataTable
-        columns={columns}
-        data={data}
-        pagination
-        // onSelectedRowsChange={handleChange}
-        // clearSelectedRows={toggledClearRows}
-      />
+      <DataTable columns={columns} data={data} pagination />
+
+      <div>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          scroll={scroll}
+          aria-labelledby="scroll-dialog-title"
+          aria-describedby="scroll-dialog-description"
+        >
+          <DialogContent dividers="paper">
+            <DialogContentText
+              id="scroll-dialog-description"
+              ref={descriptionElementRef}
+              tabIndex={-1}
+              maxWidth="400px"
+            >
+              <Typography
+                id="modal-modal-title"
+                variant="h6"
+                color="rgb(52, 71, 103)"
+              >
+                Create Item
+              </Typography>
+              <FormControl fullWidth sx={{ mb: "10px" }}>
+                <Typography
+                  variant="body2"
+                  mb={1}
+                  mt={2}
+                  color="rgb(52, 71, 103)"
+                >
+                  Name:
+                </Typography>
+                <TextField
+                  fullWidth
+                  id="outlined-required"
+                  size="small"
+                  value={nameInputs.name}
+                  onChange={handleName}
+                  error={
+                    nameInputs.startValidate &&
+                    (validationName.passes() === true ? false : true)
+                  }
+                />
+                <FormHelperText error sx={{ ml: 0 }}>
+                  {nameInputs.startValidate &&
+                    validationName.errors.first("name")}
+                </FormHelperText>
+              </FormControl>
+
+              <FormControl fullWidth>
+                <Typography variant="body2" mb={1} color="rgb(52, 71, 103)">
+                  Item Image:
+                </Typography>
+
+                <label htmlFor="collection-image">
+                  <Box
+                    width="400px"
+                    height="200px"
+                    sx={{
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                      background: "#e8f4ff",
+                      color: "#1976d2",
+                    }}
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                  >
+                    {imageInputs.preview ? (
+                      <img
+                        src={imageInputs.preview}
+                        height={"100%"}
+                        width={"100%"}
+                        style={{
+                          objectFit: "cover",
+                          borderRadius: "5px",
+                          border: "solid #e8f4ff 2px",
+                        }}
+                      />
+                    ) : (
+                      "+"
+                    )}
+                  </Box>
+                </label>
+                {imageInputs.error && (
+                  <p style={{ color: "#e53935", fontSize: "11px" }}>
+                    {imageInputs.error}
+                  </p>
+                )}
+
+                <input
+                  type="file"
+                  id="collection-image"
+                  name="collection-image"
+                  accept="image/png, image/jpeg"
+                  style={{ display: "none " }}
+                  onChange={handleImage}
+                />
+              </FormControl>
+              <Box my={3} display="flex" justifyContent={"flex-end"}>
+                <Button
+                  variant="contained"
+                  sx={{
+                    mr: "10px",
+                    background: "rgb(52, 71, 103)",
+                    textTransform: "none",
+                    boxShadow: "none",
+                    "&:hover, &:active, &:focus": {
+                      boxShadow: "none",
+                      backgroundColor: "rgba(52, 71, 103, 0.9)",
+                    },
+                  }}
+                >
+                  Create
+                </Button>
+                <Button
+                  sx={{
+                    color: "rgb(52, 71, 103 )",
+                    textTransform: "none",
+                    boxShadow: "none",
+                    "&:hover, &:active, &:focus": {
+                      boxShadow: "none",
+                      color: "#fff",
+                      backgroundColor: "rgba(52, 71, 103, 0.5)",
+                    },
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Box>
+              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+              </Typography>
+            </DialogContentText>
+          </DialogContent>
+        </Dialog>
+      </div>
     </Box>
   );
 }
