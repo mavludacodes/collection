@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import Validator from "validatorjs";
 import DataTable from "react-data-table-component";
 import { LabelContext } from "../index";
+
+import CreatableSelect from "react-select/creatable";
 import {
   Box,
   Tooltip,
@@ -179,6 +181,17 @@ function TableItems(props) {
       }));
     }
   };
+
+  // tags
+  const handleChange = (selected) => {
+    console.log(selected);
+  };
+
+  const options = [
+    { value: "chocolate", label: "Chocolate" },
+    { value: "strawberry", label: "Strawberry" },
+    { value: "vanilla", label: "Vanilla" },
+  ];
 
   return (
     <Box
@@ -380,6 +393,14 @@ function TableItems(props) {
                   ))}
                 </Box>
               )}
+
+              <Box>
+                <CreatableSelect
+                  isMulti
+                  onChange={handleChange}
+                  options={options}
+                />
+              </Box>
 
               <Box my={3} display="flex" justifyContent={"flex-end"}>
                 <Button
