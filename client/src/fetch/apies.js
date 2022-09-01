@@ -261,6 +261,25 @@ const getCollections = async (token, userId) => {
   }
 };
 
+const getItems = async (token, collectionId) => {
+  const req = await fetch(
+    `${process.env.REACT_APP_BACKEND_API}/api/items?collectionId=${collectionId}`,
+    {
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset= UTF-8",
+        "auth-token": token,
+      },
+    }
+  );
+  try {
+    const res = await req.json();
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
 export {
   getCategories,
   postImage,
@@ -275,4 +294,5 @@ export {
   updateCheckboxField,
   createCollection,
   getCollections,
+  getItems,
 };

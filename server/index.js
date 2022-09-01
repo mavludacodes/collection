@@ -578,6 +578,22 @@ app.put("/api/checkbox-fields/:id", verifyUser, (req, res) => {
 //   res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
 // });
 
+// get items by collectionId
+app.get("/api/items", (req, res) => {
+  let collectionId = req.query.collectionId;
+  pool.query(
+    `SELECT items.id, items.name, items.created_at, items.image_id, items.tags, uploads.image_url FROM items JOIN uploads ON items.image_id = uploads.id WHERE items.collection_id =$1`,
+    [collectionId],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      // console.log(result.rows);
+      res.send(result.rows);
+    }
+  );
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

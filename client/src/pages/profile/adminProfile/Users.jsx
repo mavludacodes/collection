@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import {
@@ -19,6 +19,7 @@ import LockOpenIcon from "@mui/icons-material/LockOpen";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { getUsers, blockUser, changeUserRole } from "../../../fetch/auth";
 import Modal from "@mui/material/Modal";
+import { LabelContext } from "../index";
 
 const style = {
   position: "absolute",
@@ -116,11 +117,16 @@ const columns = [
 function Users() {
   const current_user = JSON.parse(localStorage.getItem("current_user"));
   const navigate = useNavigate();
-
+  const [state, setState] = useContext(LabelContext);
   const { token } = current_user;
   const [data, setData] = useState([]);
   const [changed, setChanged] = useState(true);
   useEffect(() => {
+    setState((state) => ({
+      ...state,
+      label: "All users",
+      sublabel: "Control all users from here",
+    }));
     getUsers(token).then((res) => {
       setData(res);
     });
@@ -214,13 +220,21 @@ function Users() {
   };
 
   return (
-    <>
+    <Box
+      sx={{
+        padding: "30px",
+        background: "#fff",
+        borderRadius: "5px",
+        boxShadow: "0 1px 20px 0 rgb(69 90 100 / 8%)",
+      }}
+    >
       <Toolbar
         sx={{
           pl: { sm: 2 },
           pr: { xs: 1, sm: 1 },
           ...(selectedRows.length > 0 && {
             bgcolor: "#F6F9FC",
+            borderRadius: "5px",
           }),
         }}
       >
@@ -378,7 +392,7 @@ function Users() {
           </Box>
         </Box>
       </Modal>
-    </>
+    </Box>
   );
 }
 
