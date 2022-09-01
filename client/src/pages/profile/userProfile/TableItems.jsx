@@ -14,6 +14,8 @@ import {
   FormHelperText,
   TextField,
 } from "@mui/material";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -312,6 +314,73 @@ function TableItems(props) {
                   onChange={handleImage}
                 />
               </FormControl>
+              {extraInputs &&
+                extraInputs.stringInputs &&
+                extraInputs.stringInputs.map((el) => (
+                  <Box key={el.id}>
+                    <FormControl fullWidth>
+                      <Typography
+                        variant="body2"
+                        mb={1}
+                        mt={2}
+                        color="rgb(52, 71, 103)"
+                      >
+                        {el.name}:
+                      </Typography>
+                      <TextField
+                        fullWidth
+                        id="outlined-required"
+                        size="small"
+                      />
+                    </FormControl>
+                  </Box>
+                ))}
+
+              {extraInputs &&
+                extraInputs.integerInputs &&
+                extraInputs.integerInputs.map((el) => (
+                  <Box key={el.id}>
+                    <FormControl fullWidth>
+                      <Typography
+                        variant="body2"
+                        mb={1}
+                        mt={2}
+                        color="rgb(52, 71, 103)"
+                      >
+                        {el.name}:
+                      </Typography>
+                      <TextField
+                        type="number"
+                        fullWidth
+                        id="outlined-required"
+                        size="small"
+                      />
+                    </FormControl>
+                  </Box>
+                ))}
+
+              {extraInputs && extraInputs.checkboxInputs && (
+                <Box mt={3}>
+                  {extraInputs.checkboxInputs.map((el) => (
+                    <Box key={el.id}>
+                      <FormControlLabel
+                        sx={{
+                          color: "rgb(52, 71, 103)",
+                        }}
+                        control={
+                          <Checkbox
+                            sx={{
+                              color: "rgb(52, 71, 103)",
+                            }}
+                          />
+                        }
+                        label={el.name}
+                      />
+                    </Box>
+                  ))}
+                </Box>
+              )}
+
               <Box my={3} display="flex" justifyContent={"flex-end"}>
                 <Button
                   variant="contained"
@@ -329,28 +398,14 @@ function TableItems(props) {
                   Create
                 </Button>
                 <Button
+                  variant="secondary"
                   sx={{
-                    color: "rgb(52, 71, 103 )",
                     textTransform: "none",
-                    boxShadow: "none",
-                    "&:hover, &:active, &:focus": {
-                      boxShadow: "none",
-                      color: "#fff",
-                      backgroundColor: "rgba(52, 71, 103, 0.5)",
-                    },
                   }}
                 >
                   Cancel
                 </Button>
               </Box>
-              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-              </Typography>
             </DialogContentText>
           </DialogContent>
         </Dialog>
