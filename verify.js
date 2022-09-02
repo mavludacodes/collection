@@ -6,7 +6,7 @@ module.exports = function (req, res, next) {
 
   try {
     const verified = jwt.verify(token, process.env.TOKEN_KEY);
-    console.log(verified);
+    // console.log(verified);
   } catch (err) {
     res.status(400).send("Invalid Token");
   }

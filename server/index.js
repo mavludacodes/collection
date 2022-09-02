@@ -649,6 +649,29 @@ app.get("/api/tags", (req, res) => {
   });
 });
 
+// post tags
+app.post("/api/tags", (req, res) => {
+  let { name } = req.body;
+  if (!name) {
+    res.status(400).send("Error");
+  } else {
+    pool.query(
+      `INSERT INTO tags (tagname) 
+       VALUES ($1)
+       RETURNING id, tagname`,
+      [name],
+      (err, r) => {
+        if (err) {
+          console.log(err);
+        }
+        if (r.rows.length > 0) {
+          res.status(200).send(r.rows[0]);
+        }
+      }
+    );
+  }
+});
+
 // app.get("*", (req, res) => {
 //   res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
 // });

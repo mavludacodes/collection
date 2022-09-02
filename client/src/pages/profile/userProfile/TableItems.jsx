@@ -31,6 +31,7 @@ import {
   getCheckboxFields,
   getIntegerFields,
   getTags,
+  postTags,
 } from "../../../fetch/apies";
 
 const columns = [
@@ -102,15 +103,17 @@ function TableItems() {
     getCheckboxFields(token, id).then((res) => {
       setExtraInputs((prevState) => ({ ...prevState, checkboxInputs: res }));
     });
-
-    getTags().then((res) => {
-      let newArr = res.map((el) => ({ value: el.id, label: el.tagname }));
-      setTagOptions(newArr);
-    });
   }, []);
 
   const [open, setOpen] = React.useState(false);
   const [scroll, setScroll] = React.useState("paper");
+
+  useEffect(() => {
+    getTags().then((res) => {
+      let newArr = res.map((el) => ({ value: el.id, label: el.tagname }));
+      setTagOptions(newArr);
+    });
+  }, [open]);
 
   const handleClickOpen = (scrollType) => () => {
     setOpen(true);
@@ -236,6 +239,14 @@ function TableItems() {
           });
         }
         if (selectedTags.newTags.length > 0) {
+          Promise.all(
+            selectedTags.newTags.map(async (item) => {
+              const res = await postTags({
+                name: item.label,
+              });
+              await data.tags.push(Number(res.id));
+            })
+          );
         }
         console.log(data);
       }
