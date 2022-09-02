@@ -30,6 +30,7 @@ import {
   getStringFields,
   getCheckboxFields,
   getIntegerFields,
+  getTags,
 } from "../../../fetch/apies";
 
 const columns = [
@@ -66,9 +67,8 @@ const columns = [
   },
 ];
 
-function TableItems(props) {
+function TableItems() {
   const { id } = useParams();
-  console.log(id);
   const current_user = JSON.parse(localStorage.getItem("current_user"));
   const { token } = current_user;
   const [state, setState] = useContext(LabelContext);
@@ -80,6 +80,8 @@ function TableItems(props) {
     integerInputs: "",
     checkboxInputs: "",
   });
+
+  const [tagOptions, setTagOptions] = useState();
   useEffect(() => {
     setState((state) => ({
       ...state,
@@ -99,6 +101,11 @@ function TableItems(props) {
     });
     getCheckboxFields(token, id).then((res) => {
       setExtraInputs((prevState) => ({ ...prevState, checkboxInputs: res }));
+    });
+
+    getTags().then((res) => {
+      let newArr = res.map((el) => ({ value: el.id, label: el.tagname }));
+      setTagOptions(newArr);
     });
   }, []);
 
@@ -183,15 +190,62 @@ function TableItems(props) {
   };
 
   // tags
+  const [selectedTags, setSelectedTags] = useState({
+    oldTags: [],
+    newTags: [],
+  });
+
   const handleChange = (selected) => {
-    console.log(selected);
+    if (selected) {
+      let newTags = selected.filter((el) => {
+        if ("__isNew__" in el) {
+          if (el.__isNew__ === true) {
+            return el;
+          }
+        }
+      });
+      let oldTags = selected.filter((el) => {
+        if (!("__isNew__" in el)) {
+          return el;
+        }
+      });
+      setSelectedTags((prevState) => ({ ...prevState, oldTags, newTags }));
+    }
   };
 
-  const options = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-  ];
+  const createItemBtn = (e) => {
+    e.preventDefault();
+    if (imageInputs.file === "") {
+      setImageInputs((prevState) => ({
+        ...prevState,
+        error: "Image required",
+      }));
+    }
+
+    if (validationName.passes()) {
+      let data = {
+        name: nameInputs.name,
+        collection_id: id,
+        tags: [],
+      };
+
+      if (imageInputs.file) {
+        if (selectedTags.oldTags.length > 0) {
+          selectedTags.oldTags.map((el) => {
+            data.tags.push(Number(el.value));
+          });
+        }
+        if (selectedTags.newTags.length > 0) {
+        }
+        console.log(data);
+      }
+    } else {
+      setNameInputs((prevState) => ({
+        ...prevState,
+        startValidate: true,
+      }));
+    }
+  };
 
   return (
     <Box
@@ -237,20 +291,14 @@ function TableItems(props) {
           aria-labelledby="scroll-dialog-title"
           aria-describedby="scroll-dialog-description"
         >
-          <DialogContent dividers="paper">
+          <DialogContent dividers={true}>
             <DialogContentText
               id="scroll-dialog-description"
               ref={descriptionElementRef}
               tabIndex={-1}
               maxWidth="400px"
             >
-              <Typography
-                id="modal-modal-title"
-                variant="h6"
-                color="rgb(52, 71, 103)"
-              >
-                Create Item
-              </Typography>
+              <Typography color="rgb(52, 71, 103)">Create Item</Typography>
               <FormControl fullWidth sx={{ mb: "10px" }}>
                 <Typography
                   variant="body2"
@@ -313,9 +361,9 @@ function TableItems(props) {
                   </Box>
                 </label>
                 {imageInputs.error && (
-                  <p style={{ color: "#e53935", fontSize: "11px" }}>
+                  <Typography variant="caption" color="#D32F2F" mt={1}>
                     {imageInputs.error}
-                  </p>
+                  </Typography>
                 )}
 
                 <input
@@ -395,10 +443,18 @@ function TableItems(props) {
               )}
 
               <Box>
+                <Typography
+                  variant="body2"
+                  mb={1}
+                  mt={2}
+                  color="rgb(52, 71, 103)"
+                >
+                  Tags:
+                </Typography>
                 <CreatableSelect
                   isMulti
                   onChange={handleChange}
-                  options={options}
+                  options={tagOptions}
                 />
               </Box>
 
@@ -415,6 +471,7 @@ function TableItems(props) {
                       backgroundColor: "rgba(52, 71, 103, 0.9)",
                     },
                   }}
+                  onClick={createItemBtn}
                 >
                   Create
                 </Button>

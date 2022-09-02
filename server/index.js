@@ -638,6 +638,17 @@ app.get("/api/items", (req, res) => {
   );
 });
 
+// get tags
+app.get("/api/tags", (req, res) => {
+  pool.query(`SELECT * FROM tags`, (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+    // console.log(result.rows);
+    res.send(result.rows);
+  });
+});
+
 // app.get("*", (req, res) => {
 //   res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
 // });
