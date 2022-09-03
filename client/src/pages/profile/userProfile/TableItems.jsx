@@ -94,7 +94,7 @@ function TableItems() {
     {
       cell: (row) => (
         <Box>
-          <IconButton>
+          <IconButton onClick={(e) => openModalForEdit(e, row)}>
             <EditIcon sx={{ color: "rgb(52, 71, 103)" }} />
           </IconButton>
           <IconButton onClick={(e) => deleteItemBtn(e, row.id)}>
@@ -385,8 +385,32 @@ function TableItems() {
     }
   };
 
+  const [action, setAction] = useState("");
+  const openModalForEdit = (e, row) => {
+    console.log(row);
+    setAction("Edit");
+    setNameInputs((prevState) => ({
+      ...prevState,
+      name: row.name,
+    }));
+    setImageInputs((prevState) => ({
+      ...prevState,
+      preview: `${process.env.REACT_APP_BACKEND_API}/images/${row.image_id}/${row.image_url}`,
+      previous: `${process.env.REACT_APP_BACKEND_API}/images/${row.image_id}/${row.image_url}`,
+    }));
+
+    let prevTags = [];
+    row.tags.map((el) => {
+      const founded = tagOptions.filter((elem) => elem.value == el);
+      if (founded) {
+        prevTags.push(...founded);
+      }
+    });
+    setSelectedTags((prevState) => ({ ...prevState, oldTags: prevTags }));
+    setOpen(true);
+  };
+
   const deleteItemBtn = (e, id) => {
-    console.log(id);
     deleteItem(token, id).then((res) => {
       console.log(res.status);
       if (res.status === 202) {
@@ -539,6 +563,7 @@ function TableItems() {
                     <TextField
                       fullWidth
                       id="outlined-required"
+                      // value={additionalInputs.stringValues.get(el.id)}
                       onChange={(e) =>
                         handleAdditionalInputs(
                           e,
@@ -625,6 +650,11 @@ function TableItems() {
               </Typography>
               <CreatableSelect
                 isMulti
+                value={
+                  action === "Edit"
+                    ? selectedTags.oldTags
+                    : [...selectedTags.newTags, ...selectedTags.oldTags]
+                }
                 onChange={handleChange}
                 options={tagOptions}
               />

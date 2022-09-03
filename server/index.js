@@ -662,7 +662,7 @@ app.post("/api/items", verifyUser, (req, res) => {
 });
 
 // delete item
-app.delete("/api/items/:id", verifyAdmin, (req, res) => {
+app.delete("/api/items/:id", verifyUser, (req, res) => {
   const id = req.params.id;
   pool.query(
     `DELETE
