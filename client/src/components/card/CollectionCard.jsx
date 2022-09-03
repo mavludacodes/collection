@@ -85,7 +85,7 @@ export default function CollectionCard({ collection }) {
           See More
         </Button>
         <Link
-          to={`/profile/items/${collection.id}`}
+          to={`/profile/collection-items/${collection.id}`}
           style={{ textDecoration: "none" }}
         >
           <Button size="small" sx={{ textTransform: "none" }}>

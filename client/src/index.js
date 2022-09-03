@@ -18,6 +18,7 @@ import Collections from "./pages/profile/adminProfile/Collections";
 import MyCollections from "./pages/profile/userProfile/MyCollections";
 import CreateCollection from "./pages/profile/userProfile/CreateCollection";
 import TableItems from "./pages/profile/userProfile/TableItems";
+import Item from "./pages/profile/userProfile/Item";
 
 // main page
 import Main from "./pages/main";
@@ -41,7 +42,8 @@ root.render(
           <Route path="create-collection" element={<CreateCollection />} />
           <Route path="collections" element={<Collections />} />
           <Route path="my-collections" element={<MyCollections />} />
-          <Route path="items/:id" element={<TableItems />} />
+          <Route path="collection-items/:id" element={<TableItems />} />
+          <Route path="items/:id" element={<Item />} />
         </Route>
       </Routes>
     </BrowserRouter>

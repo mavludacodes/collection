@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Validator from "validatorjs";
 import DataTable from "react-data-table-component";
 import { LabelContext } from "../index";
 import CircularProgress from "@mui/material/CircularProgress";
-
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import CreatableSelect from "react-select/creatable";
 import {
   Box,
@@ -57,10 +57,7 @@ const columns = [
       />
     ),
   },
-  {
-    name: "Tags",
-    selector: (row) => "",
-  },
+
   {
     name: "Created",
     selector: (row) => {
@@ -74,6 +71,24 @@ const columns = [
         new Date(row.created_at).getDate()
       );
     },
+  },
+  {
+    cell: (row) => (
+      <Link to={`/profile/items/${row.id}`} style={{ textDecoration: "none" }}>
+        <Button
+          variant="outlined"
+          size="small"
+          sx={{
+            textTransform: "none",
+          }}
+        >
+          See More
+        </Button>
+      </Link>
+    ),
+    ignoreRowClick: true,
+    allowOverflow: true,
+    button: true,
   },
 ];
 
