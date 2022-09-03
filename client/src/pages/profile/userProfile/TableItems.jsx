@@ -135,7 +135,7 @@ function TableItems() {
 
   // name
   const [nameInputs, setNameInputs] = useState({
-    email: "",
+    name: "",
     rule: "required",
     startValidate: false,
   });

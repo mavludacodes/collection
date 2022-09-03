@@ -99,7 +99,7 @@ function CreateCollection() {
 
   // name
   const [nameInputs, setNameInputs] = useState({
-    email: "",
+    name: "",
     rule: "required",
     startValidate: false,
   });
