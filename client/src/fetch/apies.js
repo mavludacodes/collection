@@ -355,6 +355,26 @@ const getItems = async (token, collectionId) => {
   }
 };
 
+const deleteItem = async (token, id) => {
+  const req = await fetch(
+    `${process.env.REACT_APP_BACKEND_API}/api/items/${id}`,
+    {
+      method: "DELETE",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset= UTF-8",
+        "auth-token": token,
+      },
+    }
+  );
+  try {
+    const res = await req;
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
 export {
   getCategories,
   postImage,
@@ -374,4 +394,5 @@ export {
   getCollections,
   getItems,
   createItem,
+  deleteItem,
 };

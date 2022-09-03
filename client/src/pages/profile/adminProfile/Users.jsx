@@ -17,7 +17,12 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { getUsers, blockUser, changeUserRole } from "../../../fetch/auth";
+import {
+  getUsers,
+  blockUser,
+  changeUserRole,
+  deleteUser,
+} from "../../../fetch/auth";
 import Modal from "@mui/material/Modal";
 import { LabelContext } from "../index";
 
@@ -219,6 +224,30 @@ function Users() {
     }
   };
 
+  const deleteUserBtn = (e) => {
+    e.preventDefault();
+    if (selectedRows.length > 0) {
+      Promise.all(
+        selectedRows.map((el) => {
+          return deleteUser(Number(el.id), current_user.token).then(
+            (res) => res.status
+          );
+        })
+      ).then((resp) => {
+        if (resp.length > 0) {
+          setSelectedRows([]);
+          handleClearRows();
+          setChanged(!changed);
+          const isME = selectedRows.filter((el) => el.id == current_user.id);
+          if (selectedRows.length === data.length || isME.length > 0) {
+            navigate("/auth/login");
+            localStorage.removeItem("current_user");
+          }
+        }
+      });
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -287,7 +316,7 @@ function Users() {
               </IconButton>
             </Tooltip>
             <Tooltip title="Delete">
-              <IconButton>
+              <IconButton onClick={deleteUserBtn}>
                 <DeleteIcon />
               </IconButton>
             </Tooltip>

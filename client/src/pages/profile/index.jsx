@@ -25,7 +25,7 @@ function Profile() {
     <LabelContext.Provider value={[state, setState]}>
       <Box sx={{ display: "flex", background: "#F6F9FC" }}>
         <CssBaseline />
-        <ProfileSidebar />
+        <ProfileSidebar change="nochange" />
         <Box
           sx={{
             mt: { xs: "50px", sm: "70px" },

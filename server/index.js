@@ -661,6 +661,28 @@ app.post("/api/items", verifyUser, (req, res) => {
   }
 });
 
+// delete item
+app.delete("/api/items/:id", verifyAdmin, (req, res) => {
+  const id = req.params.id;
+  pool.query(
+    `DELETE
+     FROM items
+     WHERE id = $1
+     RETURNING id, name;
+    `,
+    [id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      if (result.rows.length > 0) {
+        console.log(result.rows);
+        res.status(202).send("Ok");
+      }
+    }
+  );
+});
+
 // get tags
 app.get("/api/tags", (req, res) => {
   pool.query(`SELECT * FROM tags`, (err, result) => {

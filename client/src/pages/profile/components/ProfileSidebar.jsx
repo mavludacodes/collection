@@ -23,6 +23,7 @@ import Menu from "@mui/material/Menu";
 const drawerWidth = 240;
 
 function ProfileSidebar(props) {
+  console.log(props.change);
   const current_user = JSON.parse(localStorage.getItem("current_user"));
   console.log(current_user.role);
   const navigate = useNavigate();
@@ -45,12 +46,6 @@ function ProfileSidebar(props) {
       name: "Create Collection",
       icon: <CollectionsIcon />,
       role: "user",
-    },
-    {
-      path: "collections",
-      name: "Collections",
-      icon: <CollectionsIcon />,
-      role: "admin",
     },
     {
       path: "my-collections",
@@ -223,4 +218,11 @@ ProfileSidebar.propTypes = {
   window: PropTypes.func,
 };
 
-export default ProfileSidebar;
+const areEqual = (prevProps, nextProps) => {
+  if (prevProps.change === nextProps.change) {
+    return true; // donot re-render
+  }
+  return false; // will re-render
+};
+
+export default React.memo(ProfileSidebar, areEqual);

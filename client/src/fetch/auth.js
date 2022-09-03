@@ -72,7 +72,7 @@ const blockUser = async (data, token) => {
   }
 };
 
-const deleteUser = async (id) => {
+const deleteUser = async (id, token) => {
   const req = await fetch(
     `${process.env.REACT_APP_BACKEND_API}/api/users/${id}`,
     {
@@ -80,6 +80,7 @@ const deleteUser = async (id) => {
       credentials: "same-origin",
       headers: {
         "Content-Type": "application/json; charset= UTF-8",
+        "auth-token": token,
       },
     }
   );

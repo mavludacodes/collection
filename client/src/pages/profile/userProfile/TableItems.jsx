@@ -4,8 +4,10 @@ import Validator from "validatorjs";
 import DataTable from "react-data-table-component";
 import { LabelContext } from "../index";
 import CircularProgress from "@mui/material/CircularProgress";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import CreatableSelect from "react-select/creatable";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+
 import {
   Box,
   Tooltip,
@@ -16,6 +18,7 @@ import {
   FormControl,
   FormHelperText,
   TextField,
+  IconButton,
 } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
@@ -33,6 +36,7 @@ import {
   getIntegerFields,
   postImage,
   createItem,
+  deleteItem,
 } from "../../../fetch/apies";
 
 import {
@@ -43,62 +47,74 @@ import {
 
 import { getTags, postTags } from "../../../fetch/tags";
 
-const columns = [
-  {
-    name: "Name",
-    selector: (row) => row.name,
-  },
-  {
-    name: "Image",
-    selector: (row) => (
-      <img
-        width="50%"
-        src={`${process.env.REACT_APP_BACKEND_API}/images/${row.image_id}/${row.image_url}`}
-      />
-    ),
-  },
-
-  {
-    name: "Created",
-    selector: (row) => {
-      return (
-        new Date(row.created_at).getFullYear() +
-        "-" +
-        (new Date(row.created_at).getMonth() + 1 < 9
-          ? "0" + (new Date(row.created_at).getMonth() + 1)
-          : new Date(row.created_at).getMonth() + 1) +
-        "-" +
-        new Date(row.created_at).getDate()
-      );
-    },
-  },
-  {
-    cell: (row) => (
-      <Link to={`/profile/items/${row.id}`} style={{ textDecoration: "none" }}>
-        <Button
-          variant="outlined"
-          size="small"
-          sx={{
-            textTransform: "none",
-          }}
-        >
-          See More
-        </Button>
-      </Link>
-    ),
-    ignoreRowClick: true,
-    allowOverflow: true,
-    button: true,
-  },
-];
-
 function TableItems() {
   const { id } = useParams();
   const current_user = JSON.parse(localStorage.getItem("current_user"));
   const { token } = current_user;
+
   const [state, setState] = useContext(LabelContext);
+  useEffect(() => {
+    setState((state) => ({
+      ...state,
+      label: "My Items",
+      sublabel: "Recently created items",
+    }));
+  }, []);
+
+  const columns = [
+    {
+      name: "Name",
+      selector: (row) => row.name,
+    },
+    {
+      name: "Image",
+      selector: (row) => (
+        <img
+          style={{ margin: "15px" }}
+          width="50%"
+          src={`${process.env.REACT_APP_BACKEND_API}/images/${row.image_id}/${row.image_url}`}
+        />
+      ),
+    },
+
+    {
+      name: "Created",
+      selector: (row) => {
+        return (
+          new Date(row.created_at).getFullYear() +
+          "-" +
+          (new Date(row.created_at).getMonth() + 1 < 9
+            ? "0" + (new Date(row.created_at).getMonth() + 1)
+            : new Date(row.created_at).getMonth() + 1) +
+          "-" +
+          new Date(row.created_at).getDate()
+        );
+      },
+    },
+    {
+      cell: (row) => (
+        <Box>
+          <IconButton>
+            <EditIcon sx={{ color: "rgb(52, 71, 103)" }} />
+          </IconButton>
+          <IconButton onClick={(e) => deleteItemBtn(e, row.id)}>
+            <DeleteIcon sx={{ color: "rgb(52, 71, 103)" }} />
+          </IconButton>
+        </Box>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
+  ];
 
   const [data, setData] = useState([]);
+  const [changed, setChanged] = useState(true);
+  useEffect(() => {
+    getItems(token, id).then((res) => {
+      setData(res);
+    });
+  }, [changed]);
 
   const [extraInputs, setExtraInputs] = useState({
     stringInputs: "",
@@ -106,24 +122,19 @@ function TableItems() {
     checkboxInputs: "",
   });
 
-  const [tagOptions, setTagOptions] = useState();
   useEffect(() => {
-    setState((state) => ({
-      ...state,
-      label: "My Items",
-      sublabel: "Recently created items",
-    }));
-    getItems(token, id).then((res) => {
-      setData(res);
-    });
-
     getStringFields(token, id).then((res) => {
       setExtraInputs((prevState) => ({ ...prevState, stringInputs: res }));
     });
+  }, []);
 
+  useEffect(() => {
     getIntegerFields(token, id).then((res) => {
       setExtraInputs((prevState) => ({ ...prevState, integerInputs: res }));
     });
+  }, []);
+
+  useEffect(() => {
     getCheckboxFields(token, id).then((res) => {
       setExtraInputs((prevState) => ({ ...prevState, checkboxInputs: res }));
     });
@@ -131,7 +142,7 @@ function TableItems() {
 
   const [open, setOpen] = React.useState(false);
   const [scroll, setScroll] = React.useState("paper");
-
+  const [tagOptions, setTagOptions] = useState();
   useEffect(() => {
     getTags().then((res) => {
       let newArr = res.map((el) => ({ value: el.id, label: el.tagname }));
@@ -139,12 +150,29 @@ function TableItems() {
     });
   }, [open]);
 
-  const handleClickOpen = (scrollType) => () => {
+  const handleClickOpen = () => () => {
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
+    setNameInputs((prevState) => ({
+      ...prevState,
+      name: "",
+      startValidate: false,
+    }));
+    setImageInputs((prevState) => ({
+      ...prevState,
+      file: "",
+      preview: "",
+      error: "",
+    }));
+
+    setSelectedTags((prevState) => ({
+      ...prevState,
+      oldTags: [],
+      newTags: [],
+    }));
   };
 
   const descriptionElementRef = React.useRef(null);
@@ -342,6 +370,7 @@ function TableItems() {
             }
 
             setOpen(false);
+            setChanged(!changed);
             setTimeout(() => {
               setDisableCreate(false);
             }, 2000);
@@ -354,6 +383,17 @@ function TableItems() {
         startValidate: true,
       }));
     }
+  };
+
+  const deleteItemBtn = (e, id) => {
+    console.log(id);
+    deleteItem(token, id).then((res) => {
+      console.log(res.status);
+      if (res.status === 202) {
+        let newData = data.filter((el) => el.id !== id);
+        setData((prevState) => newData);
+      }
+    });
   };
 
   return (
