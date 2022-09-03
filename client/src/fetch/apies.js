@@ -318,6 +318,24 @@ const getCollections = async (token, userId) => {
   }
 };
 
+const createItem = async (data, token) => {
+  const req = await fetch(`${process.env.REACT_APP_BACKEND_API}/api/items`, {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json; charset= UTF-8",
+      "auth-token": token,
+    },
+    body: JSON.stringify(data),
+  });
+  try {
+    const res = await req.json();
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
 const getItems = async (token, collectionId) => {
   const req = await fetch(
     `${process.env.REACT_APP_BACKEND_API}/api/items?collectionId=${collectionId}`,
@@ -329,38 +347,6 @@ const getItems = async (token, collectionId) => {
       },
     }
   );
-  try {
-    const res = await req.json();
-    return res;
-  } catch (error) {
-    console.log("error", error);
-  }
-};
-
-const getTags = async () => {
-  const req = await fetch(`${process.env.REACT_APP_BACKEND_API}/api/tags`, {
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json; charset= UTF-8",
-    },
-  });
-  try {
-    const res = await req.json();
-    return res;
-  } catch (error) {
-    console.log("error", error);
-  }
-};
-
-const postTags = async (data) => {
-  const req = await fetch(`${process.env.REACT_APP_BACKEND_API}/api/tags`, {
-    method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json; charset= UTF-8",
-    },
-    body: JSON.stringify(data),
-  });
   try {
     const res = await req.json();
     return res;
@@ -387,6 +373,5 @@ export {
   createCollection,
   getCollections,
   getItems,
-  getTags,
-  postTags,
+  createItem,
 };

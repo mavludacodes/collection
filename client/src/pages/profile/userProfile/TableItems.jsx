@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import Validator from "validatorjs";
 import DataTable from "react-data-table-component";
 import { LabelContext } from "../index";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import CreatableSelect from "react-select/creatable";
 import {
@@ -30,10 +31,17 @@ import {
   getStringFields,
   getCheckboxFields,
   getIntegerFields,
-  getTags,
-  postTags,
   postImage,
+  createItem,
 } from "../../../fetch/apies";
+
+import {
+  createStringValue,
+  createIntegerValue,
+  createCheckboxValue,
+} from "../../../fetch/fields";
+
+import { getTags, postTags } from "../../../fetch/tags";
 
 const columns = [
   {
@@ -232,6 +240,9 @@ function TableItems() {
     }));
   };
 
+  // create item
+
+  const [disableCreate, setDisableCreate] = useState(false);
   const createItemBtn = (e) => {
     e.preventDefault();
     if (imageInputs.file === "") {
@@ -249,8 +260,8 @@ function TableItems() {
       };
 
       if (imageInputs.file) {
+        setDisableCreate(true);
         postImage(current_user.token, imageInputs.file).then((res) => {
-          console.log(res);
           data = { ...data, imageId: res.id };
           if (selectedTags.oldTags.length > 0) {
             selectedTags.oldTags.map((el) => {
@@ -267,7 +278,59 @@ function TableItems() {
               })
             );
           }
-          console.log(data);
+          createItem(data, token).then((res) => {
+            let stringArr = [];
+            for (let item of additionalInputs.stringValues.keys()) {
+              stringArr.push({
+                item_id: Number(res.id),
+                ...additionalInputs.stringValues.get(item),
+              });
+            }
+
+            let integerArr = [];
+            for (let item of additionalInputs.integerValues.keys()) {
+              integerArr.push({
+                item_id: Number(res.id),
+                ...additionalInputs.integerValues.get(item),
+              });
+            }
+
+            let checkboxArr = [];
+            for (let item of additionalInputs.checkboxValues.keys()) {
+              checkboxArr.push({
+                item_id: Number(res.id),
+                ...additionalInputs.checkboxValues.get(item),
+              });
+            }
+
+            if (stringArr.length > 0) {
+              Promise.all(
+                stringArr.map(async (item) => {
+                  const res = await createStringValue(item);
+                })
+              );
+            }
+            if (integerArr.length > 0) {
+              Promise.all(
+                integerArr.map(async (item) => {
+                  const res = await createIntegerValue(item);
+                })
+              );
+            }
+
+            if (checkboxArr.length > 0) {
+              Promise.all(
+                checkboxArr.map(async (item) => {
+                  const res = await createCheckboxValue(item);
+                })
+              );
+            }
+
+            setOpen(false);
+            setTimeout(() => {
+              setDisableCreate(false);
+            }, 2000);
+          });
         });
       }
     } else {
@@ -514,6 +577,7 @@ function TableItems() {
 
             <Box my={3} display="flex" justifyContent={"flex-end"}>
               <Button
+                disabled={disableCreate}
                 variant="contained"
                 sx={{
                   mr: "10px",
@@ -527,7 +591,11 @@ function TableItems() {
                 }}
                 onClick={createItemBtn}
               >
-                Create
+                {disableCreate ? (
+                  <CircularProgress size={18} color="inherit" />
+                ) : (
+                  "Create"
+                )}
               </Button>
               <Button
                 variant="secondary"

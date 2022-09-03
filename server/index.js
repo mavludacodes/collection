@@ -639,7 +639,7 @@ app.get("/api/items", (req, res) => {
 });
 
 // post item
-app.post("/api/items", (req, res) => {
+app.post("/api/items", verifyUser, (req, res) => {
   let { name, imageId, collection_id, tags } = req.body;
   if ((!name || !imageId, !collection_id || !tags)) {
     res.status(400).send("Error");
