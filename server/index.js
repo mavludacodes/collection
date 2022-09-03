@@ -638,6 +638,29 @@ app.get("/api/items", (req, res) => {
   );
 });
 
+// post item
+app.post("/api/items", (req, res) => {
+  let { name, imageId, collection_id, tags } = req.body;
+  if ((!name || !imageId, !collection_id || !tags)) {
+    res.status(400).send("Error");
+  } else {
+    pool.query(
+      `INSERT INTO items (name, image_id, collection_id, tags) 
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, name`,
+      [name, imageId, collection_id, tags],
+      (err, r) => {
+        if (err) {
+          console.log(err);
+        }
+        if (r.rows.length > 0) {
+          res.status(200).send(r.rows[0]);
+        }
+      }
+    );
+  }
+});
+
 // get tags
 app.get("/api/tags", (req, res) => {
   pool.query(`SELECT * FROM tags`, (err, result) => {
@@ -660,6 +683,75 @@ app.post("/api/tags", (req, res) => {
        VALUES ($1)
        RETURNING id, tagname`,
       [name],
+      (err, r) => {
+        if (err) {
+          console.log(err);
+        }
+        if (r.rows.length > 0) {
+          res.status(200).send(r.rows[0]);
+        }
+      }
+    );
+  }
+});
+
+// post string-values
+app.post("/api/string-values", (req, res) => {
+  let { value, string_id, item_id } = req.body;
+  if (!value || !string_id || !item_id) {
+    res.status(400).send("Error");
+  } else {
+    pool.query(
+      `INSERT INTO string_values (value, item_id, string_id) 
+       VALUES ($1, $2, $3)
+       RETURNING id, value, item_id, string_id`,
+      [value, item_id, string_id],
+      (err, r) => {
+        if (err) {
+          console.log(err);
+        }
+        if (r.rows.length > 0) {
+          res.status(200).send(r.rows[0]);
+        }
+      }
+    );
+  }
+});
+
+// post integer-values
+app.post("/api/integer-values", (req, res) => {
+  let { value, integer_id, item_id } = req.body;
+  if (!value || !integer_id || !item_id) {
+    res.status(400).send("Error");
+  } else {
+    pool.query(
+      `INSERT INTO integer_values (value, item_id, integer_id) 
+       VALUES ($1, $2, $3)
+       RETURNING id, value, item_id, integer_id`,
+      [value, item_id, integer_id],
+      (err, r) => {
+        if (err) {
+          console.log(err);
+        }
+        if (r.rows.length > 0) {
+          res.status(200).send(r.rows[0]);
+        }
+      }
+    );
+  }
+});
+
+// post checkbox-values
+app.post("/api/checkbox-values", (req, res) => {
+  let { value, checkbox_id, item_id } = req.body;
+  if (!value || !checkbox_id || !item_id) {
+    res.status(400).send("Error");
+  } else {
+    pool.query(
+      `INSERT INTO checkbox_values (value, item_id, checkbox_id) 
+       VALUES ($1, $2, $3)
+       RETURNING id, value, item_id, checkbox_id`,
+      [value, item_id, checkbox_id],
       (err, r) => {
         if (err) {
           console.log(err);

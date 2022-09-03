@@ -32,6 +32,7 @@ import {
   getIntegerFields,
   getTags,
   postTags,
+  postImage,
 } from "../../../fetch/apies";
 
 const columns = [
@@ -216,6 +217,21 @@ function TableItems() {
     }
   };
 
+  const [additionalInputs, setAdditionalInputs] = useState({
+    stringValues: new Map(),
+    integerValues: new Map(),
+    checkboxValues: new Map(),
+  });
+  const handleAdditionalInputs = (e, id, option, type) => {
+    setAdditionalInputs((prevState) => ({
+      ...prevState,
+      [option]: additionalInputs[option].set(Number(id), {
+        [type]: Number(id),
+        value: option === "checkboxValues" ? e.target.checked : e.target.value,
+      }),
+    }));
+  };
+
   const createItemBtn = (e) => {
     e.preventDefault();
     if (imageInputs.file === "") {
@@ -233,22 +249,26 @@ function TableItems() {
       };
 
       if (imageInputs.file) {
-        if (selectedTags.oldTags.length > 0) {
-          selectedTags.oldTags.map((el) => {
-            data.tags.push(Number(el.value));
-          });
-        }
-        if (selectedTags.newTags.length > 0) {
-          Promise.all(
-            selectedTags.newTags.map(async (item) => {
-              const res = await postTags({
-                name: item.label,
-              });
-              await data.tags.push(Number(res.id));
-            })
-          );
-        }
-        console.log(data);
+        postImage(current_user.token, imageInputs.file).then((res) => {
+          console.log(res);
+          data = { ...data, imageId: res.id };
+          if (selectedTags.oldTags.length > 0) {
+            selectedTags.oldTags.map((el) => {
+              data.tags.push(Number(el.value));
+            });
+          }
+          if (selectedTags.newTags.length > 0) {
+            Promise.all(
+              selectedTags.newTags.map(async (item) => {
+                const res = await postTags({
+                  name: item.label,
+                });
+                await data.tags.push(Number(res.id));
+              })
+            );
+          }
+          console.log(data);
+        });
       }
     } else {
       setNameInputs((prevState) => ({
@@ -294,211 +314,233 @@ function TableItems() {
       </Toolbar>
       <DataTable columns={columns} data={data} pagination />
 
-      <div>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          scroll={scroll}
-          aria-labelledby="scroll-dialog-title"
-          aria-describedby="scroll-dialog-description"
-        >
-          <DialogContent dividers={true}>
-            <DialogContentText
-              id="scroll-dialog-description"
-              ref={descriptionElementRef}
-              tabIndex={-1}
-              maxWidth="400px"
-            >
-              <Typography color="rgb(52, 71, 103)">Create Item</Typography>
-              <FormControl fullWidth sx={{ mb: "10px" }}>
-                <Typography
-                  variant="body2"
-                  mb={1}
-                  mt={2}
-                  color="rgb(52, 71, 103)"
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        scroll={scroll}
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
+      >
+        <DialogContent dividers={true}>
+          <DialogContentText
+            id="scroll-dialog-description"
+            ref={descriptionElementRef}
+            tabIndex={-1}
+            maxWidth="400px"
+          >
+            <Typography color="rgb(52, 71, 103)">Create Item</Typography>
+            <FormControl fullWidth sx={{ mb: "10px" }}>
+              <Typography
+                variant="body2"
+                mb={1}
+                mt={2}
+                color="rgb(52, 71, 103)"
+              >
+                Name:
+              </Typography>
+              <TextField
+                fullWidth
+                id="outlined-required"
+                size="small"
+                value={nameInputs.name}
+                onChange={handleName}
+                error={
+                  nameInputs.startValidate &&
+                  (validationName.passes() === true ? false : true)
+                }
+              />
+              <FormHelperText error sx={{ ml: 0 }}>
+                {nameInputs.startValidate &&
+                  validationName.errors.first("name")}
+              </FormHelperText>
+            </FormControl>
+
+            <FormControl fullWidth>
+              <Typography variant="body2" mb={1} color="rgb(52, 71, 103)">
+                Item Image:
+              </Typography>
+
+              <label htmlFor="collection-image">
+                <Box
+                  width="400px"
+                  height="200px"
+                  sx={{
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    background: "#e8f4ff",
+                    color: "#1976d2",
+                  }}
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
                 >
-                  Name:
-                </Typography>
-                <TextField
-                  fullWidth
-                  id="outlined-required"
-                  size="small"
-                  value={nameInputs.name}
-                  onChange={handleName}
-                  error={
-                    nameInputs.startValidate &&
-                    (validationName.passes() === true ? false : true)
-                  }
-                />
-                <FormHelperText error sx={{ ml: 0 }}>
-                  {nameInputs.startValidate &&
-                    validationName.errors.first("name")}
-                </FormHelperText>
-              </FormControl>
-
-              <FormControl fullWidth>
-                <Typography variant="body2" mb={1} color="rgb(52, 71, 103)">
-                  Item Image:
-                </Typography>
-
-                <label htmlFor="collection-image">
-                  <Box
-                    width="400px"
-                    height="200px"
-                    sx={{
-                      borderRadius: "5px",
-                      cursor: "pointer",
-                      background: "#e8f4ff",
-                      color: "#1976d2",
-                    }}
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    {imageInputs.preview ? (
-                      <img
-                        src={imageInputs.preview}
-                        height={"100%"}
-                        width={"100%"}
-                        style={{
-                          objectFit: "cover",
-                          borderRadius: "5px",
-                          border: "solid #e8f4ff 2px",
-                        }}
-                      />
-                    ) : (
-                      "+"
-                    )}
-                  </Box>
-                </label>
-                {imageInputs.error && (
-                  <Typography variant="caption" color="#D32F2F" mt={1}>
-                    {imageInputs.error}
-                  </Typography>
-                )}
-
-                <input
-                  type="file"
-                  id="collection-image"
-                  name="collection-image"
-                  accept="image/png, image/jpeg"
-                  style={{ display: "none " }}
-                  onChange={handleImage}
-                />
-              </FormControl>
-              {extraInputs &&
-                extraInputs.stringInputs &&
-                extraInputs.stringInputs.map((el) => (
-                  <Box key={el.id}>
-                    <FormControl fullWidth>
-                      <Typography
-                        variant="body2"
-                        mb={1}
-                        mt={2}
-                        color="rgb(52, 71, 103)"
-                      >
-                        {el.name}:
-                      </Typography>
-                      <TextField
-                        fullWidth
-                        id="outlined-required"
-                        size="small"
-                      />
-                    </FormControl>
-                  </Box>
-                ))}
-
-              {extraInputs &&
-                extraInputs.integerInputs &&
-                extraInputs.integerInputs.map((el) => (
-                  <Box key={el.id}>
-                    <FormControl fullWidth>
-                      <Typography
-                        variant="body2"
-                        mb={1}
-                        mt={2}
-                        color="rgb(52, 71, 103)"
-                      >
-                        {el.name}:
-                      </Typography>
-                      <TextField
-                        type="number"
-                        fullWidth
-                        id="outlined-required"
-                        size="small"
-                      />
-                    </FormControl>
-                  </Box>
-                ))}
-
-              {extraInputs && extraInputs.checkboxInputs && (
-                <Box mt={3}>
-                  {extraInputs.checkboxInputs.map((el) => (
-                    <Box key={el.id}>
-                      <FormControlLabel
-                        sx={{
-                          color: "rgb(52, 71, 103)",
-                        }}
-                        control={
-                          <Checkbox
-                            sx={{
-                              color: "rgb(52, 71, 103)",
-                            }}
-                          />
-                        }
-                        label={el.name}
-                      />
-                    </Box>
-                  ))}
+                  {imageInputs.preview ? (
+                    <img
+                      src={imageInputs.preview}
+                      height={"100%"}
+                      width={"100%"}
+                      style={{
+                        objectFit: "cover",
+                        borderRadius: "5px",
+                        border: "solid #e8f4ff 2px",
+                      }}
+                    />
+                  ) : (
+                    "+"
+                  )}
                 </Box>
+              </label>
+              {imageInputs.error && (
+                <Typography variant="caption" color="#D32F2F" mt={1}>
+                  {imageInputs.error}
+                </Typography>
               )}
 
-              <Box>
-                <Typography
-                  variant="body2"
-                  mb={1}
-                  mt={2}
-                  color="rgb(52, 71, 103)"
-                >
-                  Tags:
-                </Typography>
-                <CreatableSelect
-                  isMulti
-                  onChange={handleChange}
-                  options={tagOptions}
-                />
-              </Box>
+              <input
+                type="file"
+                id="collection-image"
+                name="collection-image"
+                accept="image/png, image/jpeg"
+                style={{ display: "none " }}
+                onChange={handleImage}
+              />
+            </FormControl>
+            {extraInputs &&
+              extraInputs.stringInputs &&
+              extraInputs.stringInputs.map((el) => (
+                <Box key={el.id}>
+                  <FormControl fullWidth>
+                    <Typography
+                      variant="body2"
+                      mb={1}
+                      mt={2}
+                      color="rgb(52, 71, 103)"
+                    >
+                      {el.name}:
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      id="outlined-required"
+                      onChange={(e) =>
+                        handleAdditionalInputs(
+                          e,
+                          el.id,
+                          "stringValues",
+                          "string_id"
+                        )
+                      }
+                      size="small"
+                    />
+                  </FormControl>
+                </Box>
+              ))}
 
-              <Box my={3} display="flex" justifyContent={"flex-end"}>
-                <Button
-                  variant="contained"
-                  sx={{
-                    mr: "10px",
-                    background: "rgb(52, 71, 103)",
-                    textTransform: "none",
-                    boxShadow: "none",
-                    "&:hover, &:active, &:focus": {
-                      boxShadow: "none",
-                      backgroundColor: "rgba(52, 71, 103, 0.9)",
-                    },
-                  }}
-                  onClick={createItemBtn}
-                >
-                  Create
-                </Button>
-                <Button
-                  variant="secondary"
-                  sx={{
-                    textTransform: "none",
-                  }}
-                >
-                  Cancel
-                </Button>
+            {extraInputs &&
+              extraInputs.integerInputs &&
+              extraInputs.integerInputs.map((el) => (
+                <Box key={el.id}>
+                  <FormControl fullWidth>
+                    <Typography
+                      variant="body2"
+                      mb={1}
+                      mt={2}
+                      color="rgb(52, 71, 103)"
+                    >
+                      {el.name}:
+                    </Typography>
+                    <TextField
+                      type="date"
+                      fullWidth
+                      id="outlined-required"
+                      size="small"
+                      onChange={(e) =>
+                        handleAdditionalInputs(
+                          e,
+                          el.id,
+                          "integerValues",
+                          "integer_id"
+                        )
+                      }
+                    />
+                  </FormControl>
+                </Box>
+              ))}
+
+            {extraInputs && extraInputs.checkboxInputs && (
+              <Box mt={3}>
+                {extraInputs.checkboxInputs.map((el) => (
+                  <Box key={el.id}>
+                    <FormControlLabel
+                      sx={{
+                        color: "rgb(52, 71, 103)",
+                      }}
+                      control={
+                        <Checkbox
+                          sx={{
+                            color: "rgb(52, 71, 103)",
+                          }}
+                          onChange={(e) =>
+                            handleAdditionalInputs(
+                              e,
+                              el.id,
+                              "checkboxValues",
+                              "checkbox_id"
+                            )
+                          }
+                        />
+                      }
+                      label={el.name}
+                    />
+                  </Box>
+                ))}
               </Box>
-            </DialogContentText>
-          </DialogContent>
-        </Dialog>
-      </div>
+            )}
+
+            <Box>
+              <Typography
+                variant="body2"
+                mb={1}
+                mt={2}
+                color="rgb(52, 71, 103)"
+              >
+                Tags:
+              </Typography>
+              <CreatableSelect
+                isMulti
+                onChange={handleChange}
+                options={tagOptions}
+              />
+            </Box>
+
+            <Box my={3} display="flex" justifyContent={"flex-end"}>
+              <Button
+                variant="contained"
+                sx={{
+                  mr: "10px",
+                  background: "rgb(52, 71, 103)",
+                  textTransform: "none",
+                  boxShadow: "none",
+                  "&:hover, &:active, &:focus": {
+                    boxShadow: "none",
+                    backgroundColor: "rgba(52, 71, 103, 0.9)",
+                  },
+                }}
+                onClick={createItemBtn}
+              >
+                Create
+              </Button>
+              <Button
+                variant="secondary"
+                sx={{
+                  textTransform: "none",
+                }}
+              >
+                Cancel
+              </Button>
+            </Box>
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }
