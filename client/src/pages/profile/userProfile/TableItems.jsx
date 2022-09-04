@@ -154,8 +154,10 @@ function TableItems() {
     });
   }, []);
 
-  const handleClickOpen = () => () => {
+  const handleClickOpen = (e) => {
+    e.preventDefault();
     setOpen(true);
+    setAction("Create");
   };
 
   const handleClose = () => {
@@ -177,6 +179,13 @@ function TableItems() {
       ...prevState,
       oldTags: [],
       newTags: [],
+    }));
+
+    setAdditionalInputs((prevState) => ({
+      ...prevState,
+      stringValues: new Map(),
+      integerValues: new Map(),
+      checkboxValues: new Map(),
     }));
   };
 
@@ -450,6 +459,22 @@ function TableItems() {
       });
     });
 
+    getCheckboxValues(Number(row.id)).then((res) => {
+      console.log(res);
+      res.map((el) => {
+        setAdditionalInputs((prevState) => ({
+          ...prevState,
+          checkboxValues: additionalInputs.checkboxValues.set(
+            Number(el.checkbox_id),
+            {
+              checkbox_id: Number(el.integer_id),
+              value: el.value,
+            }
+          ),
+        }));
+      });
+    });
+
     setOpen(true);
   };
 
@@ -563,7 +588,7 @@ function TableItems() {
         <Tooltip title="Add new item">
           <Button
             variant="contained"
-            onClick={handleClickOpen("paper")}
+            onClick={handleClickOpen}
             sx={{
               background: "rgb(52, 71, 103)",
               textTransform: "none",
@@ -594,7 +619,9 @@ function TableItems() {
             tabIndex={-1}
             maxWidth="400px"
           >
-            <Typography color="rgb(52, 71, 103)">Create Item</Typography>
+            <Typography color="rgb(52, 71, 103)">
+              {action === "Create" ? "Create Item" : "Update Item"}
+            </Typography>
             <FormControl fullWidth sx={{ mb: "10px" }}>
               <Typography
                 variant="body2"
@@ -753,6 +780,13 @@ function TableItems() {
                           sx={{
                             color: "rgb(52, 71, 103)",
                           }}
+                          checked={
+                            additionalInputs.checkboxValues.get(Number(el.id))
+                              ? additionalInputs.checkboxValues.get(
+                                  Number(el.id)
+                                ).value
+                              : null
+                          }
                           onChange={(e) =>
                             handleAdditionalInputs(
                               e,
