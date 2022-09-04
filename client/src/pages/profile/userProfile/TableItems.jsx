@@ -37,6 +37,7 @@ import {
   postImage,
   createItem,
   deleteItem,
+  updateItem,
 } from "../../../fetch/apies";
 
 import {
@@ -148,7 +149,7 @@ function TableItems() {
       let newArr = res.map((el) => ({ value: el.id, label: el.tagname }));
       setTagOptions(newArr);
     });
-  }, [open]);
+  }, []);
 
   const handleClickOpen = () => () => {
     setOpen(true);
@@ -311,69 +312,71 @@ function TableItems() {
               data.tags.push(Number(el.value));
             });
           }
-          if (selectedTags.newTags.length > 0) {
-            Promise.all(
-              selectedTags.newTags.map(async (item) => {
-                const res = await postTags({
-                  name: item.label,
+          Promise.all(
+            selectedTags.newTags.map(async (item) => {
+              return await postTags({ name: item.label }).then((res) => {
+                return Number(res.id);
+              });
+            })
+          ).then((arr) => {
+            arr.map((id) => {
+              data.tags.push(id);
+            });
+
+            createItem(data, token).then((res) => {
+              let stringArr = [];
+              for (let item of additionalInputs.stringValues.keys()) {
+                stringArr.push({
+                  item_id: Number(res.id),
+                  ...additionalInputs.stringValues.get(item),
                 });
-                await data.tags.push(Number(res.id));
-              })
-            );
-          }
-          createItem(data, token).then((res) => {
-            let stringArr = [];
-            for (let item of additionalInputs.stringValues.keys()) {
-              stringArr.push({
-                item_id: Number(res.id),
-                ...additionalInputs.stringValues.get(item),
-              });
-            }
+              }
 
-            let integerArr = [];
-            for (let item of additionalInputs.integerValues.keys()) {
-              integerArr.push({
-                item_id: Number(res.id),
-                ...additionalInputs.integerValues.get(item),
-              });
-            }
+              let integerArr = [];
+              for (let item of additionalInputs.integerValues.keys()) {
+                integerArr.push({
+                  item_id: Number(res.id),
+                  ...additionalInputs.integerValues.get(item),
+                });
+              }
 
-            let checkboxArr = [];
-            for (let item of additionalInputs.checkboxValues.keys()) {
-              checkboxArr.push({
-                item_id: Number(res.id),
-                ...additionalInputs.checkboxValues.get(item),
-              });
-            }
+              let checkboxArr = [];
+              for (let item of additionalInputs.checkboxValues.keys()) {
+                checkboxArr.push({
+                  item_id: Number(res.id),
+                  ...additionalInputs.checkboxValues.get(item),
+                });
+              }
 
-            if (stringArr.length > 0) {
-              Promise.all(
-                stringArr.map(async (item) => {
-                  const res = await createStringValue(item);
-                })
-              );
-            }
-            if (integerArr.length > 0) {
-              Promise.all(
-                integerArr.map(async (item) => {
-                  const res = await createIntegerValue(item);
-                })
-              );
-            }
+              if (stringArr.length > 0) {
+                Promise.all(
+                  stringArr.map(async (item) => {
+                    const res = await createStringValue(item);
+                  })
+                );
+              }
+              if (integerArr.length > 0) {
+                Promise.all(
+                  integerArr.map(async (item) => {
+                    const res = await createIntegerValue(item);
+                  })
+                );
+              }
 
-            if (checkboxArr.length > 0) {
-              Promise.all(
-                checkboxArr.map(async (item) => {
-                  const res = await createCheckboxValue(item);
-                })
-              );
-            }
+              if (checkboxArr.length > 0) {
+                Promise.all(
+                  checkboxArr.map(async (item) => {
+                    const res = await createCheckboxValue(item);
+                  })
+                );
+              }
 
-            setOpen(false);
-            setChanged(!changed);
-            setTimeout(() => {
-              setDisableCreate(false);
-            }, 2000);
+              setOpen(false);
+              setChanged(!changed);
+              setTimeout(() => {
+                setDisableCreate(false);
+              }, 2000);
+            });
           });
         });
       }
@@ -386,9 +389,11 @@ function TableItems() {
   };
 
   const [action, setAction] = useState("");
+  const [itemID, setItemID] = useState();
   const openModalForEdit = (e, row) => {
     console.log(row);
     setAction("Edit");
+    setItemID(Number(row.id));
     setNameInputs((prevState) => ({
       ...prevState,
       name: row.name,
@@ -397,6 +402,7 @@ function TableItems() {
       ...prevState,
       preview: `${process.env.REACT_APP_BACKEND_API}/images/${row.image_id}/${row.image_url}`,
       previous: `${process.env.REACT_APP_BACKEND_API}/images/${row.image_id}/${row.image_url}`,
+      image_id: row.image_id,
     }));
 
     let prevTags = [];
@@ -410,7 +416,88 @@ function TableItems() {
     setOpen(true);
   };
 
+  const updateItemBtn = (e) => {
+    e.preventDefault();
+
+    if (validationName.passes()) {
+      if (imageInputs.preview === imageInputs.previous) {
+        let data = {
+          name: nameInputs.name,
+          image_id: Number(imageInputs.image_id),
+          tags: [],
+        };
+
+        if (selectedTags.oldTags.length > 0) {
+          selectedTags.oldTags.map((el) => {
+            data.tags.push(Number(el.value));
+          });
+        }
+        Promise.all(
+          selectedTags.newTags.map(async (item) => {
+            return await postTags({ name: item.label }).then((res) => {
+              return Number(res.id);
+            });
+          })
+        ).then((arr) => {
+          console.log(arr, "jsjjs");
+          arr.map((id) => {
+            data.tags.push(id);
+          });
+          if (itemID) {
+            updateItem(token, itemID, data).then((res) => {
+              console.log(res);
+            });
+          }
+        });
+      } else {
+        if (imageInputs.file === "") {
+          setImageInputs((prevState) => ({
+            ...prevState,
+            error: "Image required",
+          }));
+        }
+        if (imageInputs.file) {
+          postImage(current_user.token, imageInputs.file).then((res) => {
+            let data = {
+              name: nameInputs.name,
+              image_id: res.id,
+              tags: [],
+            };
+            if (selectedTags.oldTags.length > 0) {
+              selectedTags.oldTags.map((el) => {
+                data.tags.push(Number(el.value));
+              });
+            }
+
+            Promise.all(
+              selectedTags.newTags.map(async (item) => {
+                return await postTags({ name: item.label }).then((res) => {
+                  return Number(res.id);
+                });
+              })
+            ).then((arr) => {
+              arr.map((id) => {
+                data.tags.push(id);
+              });
+              if (itemID) {
+                updateItem(token, itemID, data).then((res) => {
+                  console.log(res);
+                });
+              }
+            });
+          });
+        }
+      }
+    } else {
+      setNameInputs((prevState) => ({
+        ...prevState,
+        startValidate: true,
+      }));
+    }
+  };
+
   const deleteItemBtn = (e, id) => {
+    e.preventDefault();
     deleteItem(token, id).then((res) => {
       console.log(res.status);
       if (res.status === 202) {
@@ -650,38 +737,53 @@ function TableItems() {
               </Typography>
               <CreatableSelect
                 isMulti
-                value={
-                  action === "Edit"
-                    ? selectedTags.oldTags
-                    : [...selectedTags.newTags, ...selectedTags.oldTags]
-                }
+                value={[...selectedTags.newTags, ...selectedTags.oldTags]}
                 onChange={handleChange}
                 options={tagOptions}
               />
             </Box>
 
             <Box my={3} display="flex" justifyContent={"flex-end"}>
-              <Button
-                disabled={disableCreate}
-                variant="contained"
-                sx={{
-                  mr: "10px",
-                  background: "rgb(52, 71, 103)",
-                  textTransform: "none",
-                  boxShadow: "none",
-                  "&:hover, &:active, &:focus": {
+              {action === "Edit" ? (
+                <Button
+                  variant="contained"
+                  sx={{
+                    mr: "10px",
+                    background: "rgb(52, 71, 103)",
+                    textTransform: "none",
                     boxShadow: "none",
-                    backgroundColor: "rgba(52, 71, 103, 0.9)",
-                  },
-                }}
-                onClick={createItemBtn}
-              >
-                {disableCreate ? (
-                  <CircularProgress size={18} color="inherit" />
-                ) : (
-                  "Create"
-                )}
-              </Button>
+                    "&:hover, &:active, &:focus": {
+                      boxShadow: "none",
+                      backgroundColor: "rgba(52, 71, 103, 0.9)",
+                    },
+                  }}
+                  onClick={updateItemBtn}
+                >
+                  Update
+                </Button>
+              ) : (
+                <Button
+                  disabled={disableCreate}
+                  variant="contained"
+                  sx={{
+                    mr: "10px",
+                    background: "rgb(52, 71, 103)",
+                    textTransform: "none",
+                    boxShadow: "none",
+                    "&:hover, &:active, &:focus": {
+                      boxShadow: "none",
+                      backgroundColor: "rgba(52, 71, 103, 0.9)",
+                    },
+                  }}
+                  onClick={createItemBtn}
+                >
+                  {disableCreate ? (
+                    <CircularProgress size={18} color="inherit" />
+                  ) : (
+                    "Create"
+                  )}
+                </Button>
+              )}
               <Button
                 variant="secondary"
                 sx={{

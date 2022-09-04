@@ -683,6 +683,33 @@ app.delete("/api/items/:id", verifyUser, (req, res) => {
   );
 });
 
+// update item
+app.put("/api/items/:id", verifyUser, (req, res) => {
+  const id = req.params.id;
+  let { name, image_id, tags } = req.body;
+  if (!name || !image_id || !tags) {
+    res.status(400).send("Error");
+  } else {
+    pool.query(
+      `UPDATE items
+         SET name = $1, image_id = $2, tags = $3
+         WHERE id = $4
+         RETURNING id, name;`,
+      [name, image_id, tags, id],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        if (result.rows.length > 0) {
+          res.status(202).send(result.rows[0]);
+        } else {
+          res.status(404).send("Not found");
+        }
+      }
+    );
+  }
+});
+
 // get tags
 app.get("/api/tags", (req, res) => {
   pool.query(`SELECT * FROM tags`, (err, result) => {
