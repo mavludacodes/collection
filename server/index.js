@@ -10,9 +10,10 @@ const app = express();
 const fileupload = require("express-fileupload");
 app.use(fileupload());
 
-const port = 8000;
+const port = process.env.PORT || 8000;
+
 app.use(express.json());
-// app.use(express.static(path.resolve(__dirname, "../client/build")));
+app.use(express.static(path.resolve(__dirname, "../client/build")));
 
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
@@ -1003,9 +1004,9 @@ app.get("/api/item-checkbox-fields", (req, res) => {
   );
 });
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
-// });
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
