@@ -681,7 +681,7 @@ app.get("/api/single-item", (req, res) => {
       if (err) {
         console.log(err);
       }
-      res.send(result.rows);
+      res.send(result.rows[0]);
     }
   );
 });
@@ -766,6 +766,18 @@ app.get("/api/tags", (req, res) => {
     }
     // console.log(result.rows);
     res.send(result.rows);
+  });
+});
+
+// get tags using arr
+app.get("/api/tags/:id", (req, res) => {
+  let tag_id = req.params.id;
+  pool.query(`SELECT * FROM tags WHERE id = $1`, [tag_id], (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+    // console.log(result.rows);
+    res.send(result.rows[0]);
   });
 });
 
@@ -898,6 +910,66 @@ app.get("/api/checkbox-values", (req, res) => {
   const item_id = req.query.item_id;
   pool.query(
     `SELECT * FROM checkbox_values WHERE item_id = $1`,
+    [item_id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      // console.log(result.rows);
+      res.send(result.rows);
+    }
+  );
+});
+
+app.get("/api/item-string-fields", (req, res) => {
+  const item_id = req.query.itemId;
+  pool.query(
+    `SELECT string_values.id,
+     string_values.value,
+      string_fields.name 
+       FROM string_values 
+       JOIN string_fields ON string_fields.id = string_values.string_id 
+       WHERE string_values.item_id = $1`,
+    [item_id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      // console.log(result.rows);
+      res.send(result.rows);
+    }
+  );
+});
+
+app.get("/api/item-integer-fields", (req, res) => {
+  const item_id = req.query.itemId;
+  pool.query(
+    `SELECT integer_values.id,
+     integer_values.value,
+      integer_fields.name 
+       FROM integer_values 
+       JOIN integer_fields ON integer_fields.id = integer_values.integer_id 
+       WHERE integer_values.item_id = $1`,
+    [item_id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      // console.log(result.rows);
+      res.send(result.rows);
+    }
+  );
+});
+
+app.get("/api/item-checkbox-fields", (req, res) => {
+  const item_id = req.query.itemId;
+  pool.query(
+    `SELECT checkbox_values.id,
+    checkbox_values.value,
+    checkbox_fields.name 
+       FROM checkbox_values 
+       JOIN checkbox_fields ON checkbox_fields.id = checkbox_values.checkbox_id 
+       WHERE checkbox_values.item_id = $1`,
     [item_id],
     (err, result) => {
       if (err) {

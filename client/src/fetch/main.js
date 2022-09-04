@@ -16,4 +16,22 @@ const getAllItems = async () => {
   }
 };
 
-export { getAllItems };
+const getSingleItem = async (itemId) => {
+  const req = await fetch(
+    `${process.env.REACT_APP_BACKEND_API}/api/single-item?itemId=${itemId}`,
+    {
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset= UTF-8",
+      },
+    }
+  );
+  try {
+    const res = await req.json();
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+export { getAllItems, getSingleItem };

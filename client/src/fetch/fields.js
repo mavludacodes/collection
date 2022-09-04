@@ -112,6 +112,60 @@ const getCheckboxValues = async (itemId) => {
   }
 };
 
+const getItemStringFields = async (itemId) => {
+  const req = await fetch(
+    `${process.env.REACT_APP_BACKEND_API}/api/item-string-fields?itemId=${itemId}`,
+    {
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset= UTF-8",
+      },
+    }
+  );
+  try {
+    const res = await req.json();
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+const getItemIntegerFields = async (itemId) => {
+  const req = await fetch(
+    `${process.env.REACT_APP_BACKEND_API}/api/item-integer-fields?itemId=${itemId}`,
+    {
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset= UTF-8",
+      },
+    }
+  );
+  try {
+    const res = await req.json();
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+const getItemCheckboxFields = async (itemId) => {
+  const req = await fetch(
+    `${process.env.REACT_APP_BACKEND_API}/api/item-checkbox-fields?itemId=${itemId}`,
+    {
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset= UTF-8",
+      },
+    }
+  );
+  try {
+    const res = await req.json();
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
 export {
   createStringValue,
   createCheckboxValue,
@@ -119,4 +173,7 @@ export {
   getStringValues,
   getCheckboxValues,
   getIntegerValues,
+  getItemStringFields,
+  getItemIntegerFields,
+  getItemCheckboxFields,
 };

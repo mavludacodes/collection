@@ -30,4 +30,22 @@ const postTags = async (data) => {
   }
 };
 
-export { getTags, postTags };
+const getSingleTag = async (id) => {
+  const req = await fetch(
+    `${process.env.REACT_APP_BACKEND_API}/api/tags/${id}`,
+    {
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset= UTF-8",
+      },
+    }
+  );
+  try {
+    const res = await req.json();
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+export { getTags, postTags, getSingleTag };
