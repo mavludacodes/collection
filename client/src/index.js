@@ -30,7 +30,7 @@ root.render(
       <Routes>
         <Route path="/" element={<App />}>
           <Route index element={<Main />} />
-          <Route path="/item" element={ItemPage} />
+          <Route path="item/:id" element={<ItemPage />} />
         </Route>
         <Route path="auth" element={<Auth />}>
           <Route path="login" element={<Login />} />

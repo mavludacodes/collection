@@ -641,7 +641,42 @@ app.get("/api/items", (req, res) => {
 // get All Items
 app.get("/api/all-items", (req, res) => {
   pool.query(
-    `SELECT items.name AS title, items.image_id, uploads.image_url, users.name AS author FROM items JOIN uploads ON items.image_id = uploads.id JOIN collections ON items.collection_id = collections.id JOIN users ON collections.user_id = users.id`,
+    `SELECT items.id,
+     items.name AS title, 
+     items.image_id, 
+     uploads.image_url,
+      users.name AS author 
+      FROM items JOIN uploads ON items.image_id = uploads.id 
+      JOIN collections ON items.collection_id = collections.id 
+      JOIN users ON collections.user_id = users.id`,
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      res.send(result.rows);
+    }
+  );
+});
+
+app.get("/api/single-item", (req, res) => {
+  let itemId = req.query.itemId;
+  pool.query(
+    `SELECT items.id, 
+    items.name AS title, 
+    items.image_id, 
+    uploads.image_url, 
+    users.name AS author,
+    items.tags,
+    collections.name AS collection_name,
+    items.created_at,
+    categories.name AS topic
+    FROM items 
+    JOIN uploads ON items.image_id = uploads.id 
+    JOIN collections ON items.collection_id = collections.id 
+    JOIN users ON collections.user_id = users.id
+    JOIN categories ON collections.category_id = categories.id 
+    WHERE items.id = $1`,
+    [itemId],
     (err, result) => {
       if (err) {
         console.log(err);
