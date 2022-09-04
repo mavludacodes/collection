@@ -793,7 +793,7 @@ app.post("/api/integer-values", (req, res) => {
 // post checkbox-values
 app.post("/api/checkbox-values", (req, res) => {
   let { value, checkbox_id, item_id } = req.body;
-  if (!value || !checkbox_id || !item_id) {
+  if (!checkbox_id || !item_id) {
     res.status(400).send("Error");
   } else {
     pool.query(
@@ -811,6 +811,54 @@ app.post("/api/checkbox-values", (req, res) => {
       }
     );
   }
+});
+
+// get string-values
+app.get("/api/string-values", (req, res) => {
+  const item_id = req.query.item_id;
+  pool.query(
+    `SELECT * FROM string_values WHERE item_id = $1`,
+    [item_id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      // console.log(result.rows);
+      res.send(result.rows);
+    }
+  );
+});
+
+// get integer-values
+app.get("/api/integer-values", (req, res) => {
+  const item_id = req.query.item_id;
+  pool.query(
+    `SELECT * FROM integer_values WHERE item_id = $1`,
+    [item_id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      // console.log(result.rows);
+      res.send(result.rows);
+    }
+  );
+});
+
+// get checkbox-values
+app.get("/api/checkbox-values", (req, res) => {
+  const item_id = req.query.item_id;
+  pool.query(
+    `SELECT * FROM checkbox_values WHERE item_id = $1`,
+    [item_id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      // console.log(result.rows);
+      res.send(result.rows);
+    }
+  );
 });
 
 // app.get("*", (req, res) => {

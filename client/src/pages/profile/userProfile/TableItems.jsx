@@ -44,6 +44,9 @@ import {
   createStringValue,
   createIntegerValue,
   createCheckboxValue,
+  getStringValues,
+  getIntegerValues,
+  getCheckboxValues,
 } from "../../../fetch/fields";
 
 import { getTags, postTags } from "../../../fetch/tags";
@@ -157,6 +160,7 @@ function TableItems() {
 
   const handleClose = () => {
     setOpen(false);
+    setAction("");
     setNameInputs((prevState) => ({
       ...prevState,
       name: "",
@@ -413,6 +417,39 @@ function TableItems() {
       }
     });
     setSelectedTags((prevState) => ({ ...prevState, oldTags: prevTags }));
+
+    getStringValues(Number(row.id)).then((res) => {
+      console.log(res);
+      res.map((el) => {
+        setAdditionalInputs((prevState) => ({
+          ...prevState,
+          stringValues: additionalInputs.stringValues.set(
+            Number(el.string_id),
+            {
+              string_id: Number(el.string_id),
+              value: el.value,
+            }
+          ),
+        }));
+      });
+    });
+
+    getIntegerValues(Number(row.id)).then((res) => {
+      console.log(res);
+      res.map((el) => {
+        setAdditionalInputs((prevState) => ({
+          ...prevState,
+          integerValues: additionalInputs.integerValues.set(
+            Number(el.integer_id),
+            {
+              integer_id: Number(el.integer_id),
+              value: el.value,
+            }
+          ),
+        }));
+      });
+    });
+
     setOpen(true);
   };
 
@@ -650,7 +687,10 @@ function TableItems() {
                     <TextField
                       fullWidth
                       id="outlined-required"
-                      // value={additionalInputs.stringValues.get(el.id)}
+                      value={
+                        additionalInputs.stringValues.get(Number(el.id)) &&
+                        additionalInputs.stringValues.get(Number(el.id)).value
+                      }
                       onChange={(e) =>
                         handleAdditionalInputs(
                           e,
@@ -683,6 +723,10 @@ function TableItems() {
                       fullWidth
                       id="outlined-required"
                       size="small"
+                      value={
+                        additionalInputs.integerValues.get(Number(el.id)) &&
+                        additionalInputs.integerValues.get(Number(el.id)).value
+                      }
                       onChange={(e) =>
                         handleAdditionalInputs(
                           e,
