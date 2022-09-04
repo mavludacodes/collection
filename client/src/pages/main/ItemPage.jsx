@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Box, Typography } from "@mui/material";
+import Chip from "@mui/material/Chip";
+import Stack from "@mui/material/Stack";
 import { getSingleItem } from "../../fetch/main";
 import { getSingleTag } from "../../fetch/tags";
 import {
@@ -82,15 +84,62 @@ function ItemPage() {
               loading="lazy"
             />
           )}
-          <Typography>
-            Title:
-            {itemData && itemData.title}
-          </Typography>
-          <Typography>Published: {itemData && itemData.created_at}</Typography>
-          <Typography>
-            Collection: {itemData && itemData.collection_name}
-          </Typography>
-          <Typography>Topic: {itemData && itemData.topic}</Typography>
+
+          <Box p={3}>
+            <Typography
+              sx={{
+                color: "rgb(52, 71, 103);",
+                fontWeight: 600,
+                mr: "5px",
+                textTransform: "capitalize",
+              }}
+            >
+              Title:{" "}
+              <span style={{ fontWeight: 500 }}>
+                {itemData && itemData.title}
+              </span>
+            </Typography>
+
+            <Typography
+              sx={{
+                color: "rgb(52, 71, 103);",
+                fontWeight: 600,
+                mr: "5px",
+                textTransform: "capitalize",
+              }}
+            >
+              Published:{" "}
+              <span style={{ fontWeight: 500 }}>
+                {itemData && itemData.created_at}
+              </span>
+            </Typography>
+            <Typography
+              sx={{
+                color: "rgb(52, 71, 103);",
+                fontWeight: 600,
+                mr: "5px",
+                textTransform: "capitalize",
+              }}
+            >
+              Collection:{" "}
+              <span style={{ fontWeight: 500 }}>
+                {itemData && itemData.collection_name}
+              </span>
+            </Typography>
+            <Typography
+              sx={{
+                color: "rgb(52, 71, 103);",
+                fontWeight: 600,
+                mr: "5px",
+                textTransform: "capitalize",
+              }}
+            >
+              Topic:{" "}
+              <span style={{ fontWeight: 500 }}>
+                {itemData && itemData.topic}
+              </span>
+            </Typography>
+          </Box>
         </Box>
         <Box>
           <Box
@@ -104,32 +153,88 @@ function ItemPage() {
               boxShadow: "0 1px 20px 0 rgb(69 90 100 / 8%)",
             }}
           >
-            {stringValues &&
-              stringValues.map((el) => {
-                return (
-                  <Typography>
-                    {el.name}: {el.value}
-                  </Typography>
-                );
-              })}
+            <Box p={3}>
+              {stringValues &&
+                stringValues.map((el) => {
+                  return (
+                    <Box display="flex">
+                      <Typography
+                        sx={{
+                          color: "rgb(52, 71, 103);",
+                          fontWeight: 600,
+                          mr: "5px",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {el.name}:
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: "rgb(52, 71, 103);",
+                          fontWeight: 500,
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {el.value}
+                      </Typography>
+                    </Box>
+                  );
+                })}
 
-            {integerValues &&
-              integerValues.map((el) => {
-                return (
-                  <Typography>
-                    {el.name}: {el.value}
-                  </Typography>
-                );
-              })}
+              {integerValues &&
+                integerValues.map((el) => {
+                  return (
+                    <Box display="flex">
+                      <Typography
+                        sx={{
+                          color: "rgb(52, 71, 103);",
+                          fontWeight: 600,
+                          mr: "5px",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {el.name}:
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: "rgb(52, 71, 103);",
+                          fontWeight: 500,
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {el.value}
+                      </Typography>
+                    </Box>
+                  );
+                })}
 
-            {checkboxValues &&
-              checkboxValues.map((el) => {
-                return (
-                  <Typography>
-                    {el.name}: {el.value ? "Yes" : "No"}
-                  </Typography>
-                );
-              })}
+              {checkboxValues &&
+                checkboxValues.map((el) => {
+                  return (
+                    <Box display="flex">
+                      <Typography
+                        sx={{
+                          color: "rgb(52, 71, 103);",
+                          fontWeight: 600,
+                          mr: "5px",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {el.name}:
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: "rgb(52, 71, 103);",
+                          fontWeight: 500,
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {el.value ? "yes" : "no"}
+                      </Typography>
+                    </Box>
+                  );
+                })}
+            </Box>
           </Box>
           <Box
             sx={{
@@ -142,11 +247,23 @@ function ItemPage() {
               boxShadow: "0 1px 20px 0 rgb(69 90 100 / 8%)",
             }}
           >
-            <Typography>Tags:</Typography>
-            {tags &&
-              tags.map((el) => {
-                return <Typography key={el}>{el}</Typography>;
-              })}
+            <Box p={3}>
+              <Typography
+                sx={{
+                  mb: "15px",
+                  color: "rgb(52, 71, 103);",
+                  fontWeight: 600,
+                }}
+              >
+                Tags:
+              </Typography>
+              <Stack direction="row" spacing={1}>
+                {tags &&
+                  tags.map((el) => {
+                    return <Chip label={el} key={el}></Chip>;
+                  })}
+              </Stack>
+            </Box>
           </Box>
         </Box>
       </Box>
