@@ -12,8 +12,14 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import { deleteCollection } from "../../fetch/apies";
 
-export default function CollectionCard({ collection }) {
+export default function CollectionCard({
+  collection,
+  collections,
+  setCollections,
+}) {
+  const current_user = JSON.parse(localStorage.getItem("current_user"));
   const [anchorEl, setAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
   const handleProfileMenuOpen = (event) => {
@@ -24,6 +30,16 @@ export default function CollectionCard({ collection }) {
   };
 
   const menuId = "primary-search-account-menu";
+
+  const deleteCollectionBtn = (e) => {
+    deleteCollection(collection.id, current_user.token).then((res) => {
+      console.log(res);
+      if (res.status === 202) {
+        let filtered = collections.filter((el) => el.id !== collection.id);
+        setCollections(filtered);
+      }
+    });
+  };
 
   const renderMenu = (
     <Menu
@@ -42,7 +58,7 @@ export default function CollectionCard({ collection }) {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Edit</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Delete</MenuItem>
+      <MenuItem onClick={(e) => deleteCollectionBtn(e)}>Delete</MenuItem>
     </Menu>
   );
 

@@ -318,6 +318,26 @@ const getCollections = async (token, userId) => {
   }
 };
 
+const deleteCollection = async (id, token) => {
+  const req = await fetch(
+    `${process.env.REACT_APP_BACKEND_API}/api/collections/${id}`,
+    {
+      method: "DELETE",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset= UTF-8",
+        "auth-token": token,
+      },
+    }
+  );
+  try {
+    const res = await req;
+    return res;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
 const createItem = async (data, token) => {
   const req = await fetch(`${process.env.REACT_APP_BACKEND_API}/api/items`, {
     method: "POST",
@@ -412,6 +432,7 @@ export {
   getIntegerFields,
   getCheckboxFields,
   createCollection,
+  deleteCollection,
   getCollections,
   getItems,
   createItem,

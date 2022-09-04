@@ -10,7 +10,7 @@ function MyCollections() {
   const current_user = JSON.parse(localStorage.getItem("current_user"));
   const [state, setState] = useContext(LabelContext);
 
-  const [collections, setCollections] = useState();
+  const [collections, setCollections] = useState([]);
   useEffect(() => {
     setState((state) => ({
       ...state,
@@ -27,7 +27,11 @@ function MyCollections() {
       {collections &&
         collections.map((collection) => (
           <Box key={collection.id} sx={{ mr: "30px", mb: "35px" }}>
-            <CollectionCard collection={collection} />
+            <CollectionCard
+              collection={collection}
+              collections={collections}
+              setCollections={setCollections}
+            />
           </Box>
         ))}
     </Box>

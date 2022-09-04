@@ -328,6 +328,28 @@ app.post("/api/collections", verifyUser, (req, res) => {
   }
 });
 
+// delete collection
+app.delete("/api/collections/:id", verifyUser, (req, res) => {
+  const id = req.params.id;
+  pool.query(
+    `DELETE
+     FROM collections
+     WHERE id = $1
+     RETURNING id, name;
+    `,
+    [id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      if (result.rows.length > 0) {
+        console.log(result.rows);
+        res.status(202).send("Ok");
+      }
+    }
+  );
+});
+
 // get collection by userId
 app.get("/api/collections", (req, res) => {
   let userId = req.query.userId;
