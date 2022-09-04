@@ -28,7 +28,7 @@ function Main() {
         </Typography>
       </Box>
       <ListItems />
-      <Box sx={{ background: "#F6F9FC", p: "20px", my: "40px" }}>
+      {/* <Box sx={{ background: "#F6F9FC", p: "20px", my: "40px" }}>
         <Typography
           sx={{
             m: "40px",
@@ -48,8 +48,8 @@ function Main() {
         >
           Top Collections
         </Typography>
-      </Box>
-      <TopCollections />
+      </Box> */}
+      {/* <TopCollections /> */}
       <Box sx={{ background: "#F6F9FC", height: "160px" }}></Box>
     </div>
   );

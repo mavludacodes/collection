@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ImageList from "@mui/material/ImageList";
 import ImageListItemBar from "@mui/material/ImageListItemBar";
@@ -9,42 +9,53 @@ import Favorite from "@mui/icons-material/Favorite";
 import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
 import { Typography } from "@mui/material";
 
+import { getAllItems } from "../../fetch/main";
+
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
+
 export default function ListItems() {
   const navigate = useNavigate();
   const navigateBtn = () => {
     navigate("/item");
   };
 
+  const [items, setItems] = useState();
+  useEffect(() => {
+    getAllItems().then((res) => {
+      setItems(res);
+    });
+  }, []);
+
   return (
     <Container maxWidth="md">
-      <ImageList variant="masonry" cols={3} gap={8}>
-        {itemData.map((item) => (
-          <ImageListItem key={item.img}>
-            <img
-              src={`${item.img}?w=248&fit=crop&auto=format`}
-              srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
-              alt={item.title}
-              loading="lazy"
-            />
-            <ImageListItemBar
-              //   sx={{ background: "rgba(52, 71, 103, 0.74)" }}
-              title={
-                <Typography onClick={navigateBtn} sx={{ cursor: "pointer" }}>
-                  The Ocean
-                </Typography>
-              }
-              subtitle="Luna Aura"
-              actionIcon={
-                <Checkbox
-                  {...label}
-                  icon={<FavoriteRoundedIcon sx={{ color: "#fff" }} />}
-                  checkedIcon={<Favorite sx={{ color: "red" }} />}
-                />
-              }
-            />
-          </ImageListItem>
-        ))}
+      <ImageList variant="masonry" cols={3} gap={12}>
+        {items &&
+          items.map((item) => (
+            <ImageListItem key={item.img}>
+              <img
+                src={`${process.env.REACT_APP_BACKEND_API}/images/${item.image_id}/${item.image_url}`}
+                srcSet={`${process.env.REACT_APP_BACKEND_API}/images/${item.image_id}/${item.image_url}`}
+                alt={item.name}
+                loading="lazy"
+              />
+              <ImageListItemBar
+                //   sx={{ background: "rgba(52, 71, 103, 0.74)" }}
+                title={
+                  <Typography onClick={navigateBtn} sx={{ cursor: "pointer" }}>
+                    {item.title}
+                  </Typography>
+                }
+                subtitle={item.author}
+                actionIcon={
+                  <Checkbox
+                    {...label}
+                    icon={<FavoriteRoundedIcon sx={{ color: "#fff" }} />}
+                    checkedIcon={<Favorite sx={{ color: "red" }} />}
+                  />
+                }
+              />
+            </ImageListItem>
+          ))}
       </ImageList>
     </Container>
   );

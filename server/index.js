@@ -638,6 +638,19 @@ app.get("/api/items", (req, res) => {
   );
 });
 
+// get All Items
+app.get("/api/all-items", (req, res) => {
+  pool.query(
+    `SELECT items.name AS title, items.image_id, uploads.image_url, users.name AS author FROM items JOIN uploads ON items.image_id = uploads.id JOIN collections ON items.collection_id = collections.id JOIN users ON collections.user_id = users.id`,
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      res.send(result.rows);
+    }
+  );
+});
+
 // post item
 app.post("/api/items", verifyUser, (req, res) => {
   let { name, imageId, collection_id, tags } = req.body;

@@ -132,7 +132,7 @@ export default function Header() {
         </IconButton>
         <p>Login</p>
       </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
+      {/* <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           size="large"
           aria-label="account of current user"
@@ -143,7 +143,7 @@ export default function Header() {
           <LanguageIcon />
         </IconButton>
         <p>Language</p>
-      </MenuItem>
+      </MenuItem> */}
     </Menu>
   );
 
@@ -171,7 +171,7 @@ export default function Header() {
             >
               Login
             </Button>
-            <Button
+            {/* <Button
               sx={{ color: "#fff" }}
               onClick={handleProfileMenuOpen}
               aria-label="account of current user"
@@ -183,7 +183,7 @@ export default function Header() {
                 fontSize="10px"
                 sx={{ paddingTop: "2px" }}
               />
-            </Button>
+            </Button> */}
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton

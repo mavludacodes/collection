@@ -11,6 +11,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 
 export default function CollectionCard({ collection }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -80,17 +81,18 @@ export default function CollectionCard({ collection }) {
           {collection.description}
         </Typography>
       </CardContent>
-      <CardActions disableSpacing>
-        <Button size="small" sx={{ textTransform: "none", mr: "15px" }}>
+      <CardActions
+        disableSpacing
+        sx={{ display: "flex", justifyContent: "flex-end" }}
+      >
+        {/* <Button size="small" sx={{ textTransform: "none", mr: "15px" }}>
           See More
-        </Button>
+        </Button> */}
         <Link
           to={`/profile/collection-items/${collection.id}`}
           style={{ textDecoration: "none" }}
         >
-          <Button size="small" sx={{ textTransform: "none" }}>
-            Add Items
-          </Button>
+          <Button sx={{ textTransform: "none" }}>Add Items</Button>
         </Link>
       </CardActions>
     </Card>
