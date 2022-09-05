@@ -3,17 +3,25 @@ const express = require("express");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 const { pool } = require("../dbconfig");
+var cloudinary = require("cloudinary").v2;
 const jwt = require("jsonwebtoken");
 const verifyAdmin = require("../verifyToken");
 const verifyUser = require("../verify");
 const app = express();
 const fileupload = require("express-fileupload");
-app.use(fileupload());
+app.use(fileupload({ useTempFiles: true }));
 
 const port = process.env.PORT || 8000;
 
 app.use(express.json());
 app.use(express.static(path.resolve(__dirname, "../client/build")));
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+  secure: true,
+});
 
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
@@ -242,8 +250,8 @@ app.delete("/api/users/:id", verifyAdmin, (req, res) => {
   );
 });
 
-// upload image
-app.post("/api/upload", verifyUser, (req, res) => {
+// upload image testing
+app.post("/api/test", verifyUser, (req, res) => {
   let img;
   let uploadPath;
 
@@ -272,8 +280,48 @@ app.post("/api/upload", verifyUser, (req, res) => {
   });
 });
 
+// upload image
+app.post("/api/upload", (req, res) => {
+  let img;
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send("No files were uploaded.");
+  }
+  img = req.files.img;
+  cloudinary.uploader
+    .upload(img.tempFilePath)
+    .then((result) => {
+      pool.query(
+        `INSERT INTO uploads (image_url, url)
+         VALUES ($1, $2)
+         RETURNING id, image_url, url`,
+        [img.name, result.url],
+        (err, r) => {
+          if (err) {
+            console.log(err);
+          }
+          // res.status(200).send(result);
+          res.status(200).send(r.rows[0]);
+        }
+      );
+    })
+    .catch((err) => {
+      if (err) return res.status(500).send(err);
+    });
+});
+
 // load image
 app.get("/images/:id/:url", (req, res) => {
+  const id = req.params.id;
+  pool.query(`SELECT * FROM uploads WHERE id = $1`, [id], (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+    res.redirect(result.rows[0].url);
+  });
+});
+
+// load image testing
+app.get("/test/:id/:url", (req, res) => {
   const url = req.params.url;
   res.sendFile(path.join(__dirname, `./uploads/${url}`));
 });

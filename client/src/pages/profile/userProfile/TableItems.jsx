@@ -508,6 +508,8 @@ function TableItems() {
           if (itemID) {
             updateItem(token, itemID, data).then((res) => {
               console.log(res);
+              setOpen(false);
+              setChanged(!changed);
             });
           }
         });
@@ -544,6 +546,8 @@ function TableItems() {
               if (itemID) {
                 updateItem(token, itemID, data).then((res) => {
                   console.log(res);
+                  setOpen(false);
+                  setChanged(!changed);
                 });
               }
             });
@@ -864,6 +868,7 @@ function TableItems() {
               )}
               <Button
                 variant="secondary"
+                onClick={handleClose}
                 sx={{
                   textTransform: "none",
                 }}
