@@ -37,7 +37,6 @@ export default function ListItems() {
                 src={`${process.env.REACT_APP_BACKEND_API}/images/${item.image_id}/${item.image_url}`}
                 srcSet={`${process.env.REACT_APP_BACKEND_API}/images/${item.image_id}/${item.image_url}`}
                 alt={item.name}
-                loading="lazy"
               />
               <ImageListItemBar
                 //   sx={{ background: "rgba(52, 71, 103, 0.74)" }}
