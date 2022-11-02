@@ -250,7 +250,7 @@ app.delete("/api/users/:id", verifyAdmin, (req, res) => {
   );
 });
 
-// upload image testing
+// upload image local
 app.post("/api/test", verifyUser, (req, res) => {
   let img;
   let uploadPath;
@@ -280,7 +280,7 @@ app.post("/api/test", verifyUser, (req, res) => {
   });
 });
 
-// upload image
+// upload image cloud
 app.post("/api/upload", (req, res) => {
   let img;
   if (!req.files || Object.keys(req.files).length === 0) {
@@ -309,7 +309,7 @@ app.post("/api/upload", (req, res) => {
     });
 });
 
-// load image
+// load image cloud
 app.get("/images/:id/:url", (req, res) => {
   const id = req.params.id;
   pool.query(`SELECT * FROM uploads WHERE id = $1`, [id], (err, result) => {
@@ -320,7 +320,7 @@ app.get("/images/:id/:url", (req, res) => {
   });
 });
 
-// load image testing
+// load image local
 app.get("/test/:id/:url", (req, res) => {
   const url = req.params.url;
   res.sendFile(path.join(__dirname, `./uploads/${url}`));
